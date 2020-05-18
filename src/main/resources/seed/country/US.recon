@@ -1,0 +1,63 @@
+{
+  info: {
+    name: "United States"
+  }
+  geometry: {
+    minZoom: 0
+    maxZoom: 7
+    minSubRegionZoom: 0
+  }
+  subRegions: {
+    {node: "/country/US/state/AL", lane: "status"}
+    {node: "/country/US/state/AK", lane: "status"}
+    {node: "/country/US/state/AZ", lane: "status"}
+    {node: "/country/US/state/AR", lane: "status"}
+    {node: "/country/US/state/CA", lane: "status"}
+    {node: "/country/US/state/CO", lane: "status"}
+    {node: "/country/US/state/CT", lane: "status"}
+    {node: "/country/US/state/DE", lane: "status"}
+    {node: "/country/US/state/FL", lane: "status"}
+    {node: "/country/US/state/GA", lane: "status"}
+    {node: "/country/US/state/HI", lane: "status"}
+    {node: "/country/US/state/ID", lane: "status"}
+    {node: "/country/US/state/IL", lane: "status"}
+    {node: "/country/US/state/IN", lane: "status"}
+    {node: "/country/US/state/IA", lane: "status"}
+    {node: "/country/US/state/KS", lane: "status"}
+    {node: "/country/US/state/KY", lane: "status"}
+    {node: "/country/US/state/LA", lane: "status"}
+    {node: "/country/US/state/ME", lane: "status"}
+    {node: "/country/US/state/MD", lane: "status"}
+    {node: "/country/US/state/MA", lane: "status"}
+    {node: "/country/US/state/MI", lane: "status"}
+    {node: "/country/US/state/MN", lane: "status"}
+    {node: "/country/US/state/MS", lane: "status"}
+    {node: "/country/US/state/MO", lane: "status"}
+    {node: "/country/US/state/MT", lane: "status"}
+    {node: "/country/US/state/NE", lane: "status"}
+    {node: "/country/US/state/NV", lane: "status"}
+    {node: "/country/US/state/NH", lane: "status"}
+    {node: "/country/US/state/NJ", lane: "status"}
+    {node: "/country/US/state/NM", lane: "status"}
+    {node: "/country/US/state/NY", lane: "status"}
+    {node: "/country/US/state/NC", lane: "status"}
+    {node: "/country/US/state/ND", lane: "status"}
+    {node: "/country/US/state/OH", lane: "status"}
+    {node: "/country/US/state/OK", lane: "status"}
+    {node: "/country/US/state/OR", lane: "status"}
+    {node: "/country/US/state/PA", lane: "status"}
+    {node: "/country/US/state/RI", lane: "status"}
+    {node: "/country/US/state/SC", lane: "status"}
+    {node: "/country/US/state/SD", lane: "status"}
+    {node: "/country/US/state/TN", lane: "status"}
+    {node: "/country/US/state/TX", lane: "status"}
+    {node: "/country/US/state/UT", lane: "status"}
+    {node: "/country/US/state/VT", lane: "status"}
+    {node: "/country/US/state/VA", lane: "status"}
+    {node: "/country/US/state/WA", lane: "status"}
+    {node: "/country/US/state/WV", lane: "status"}
+    {node: "/country/US/state/WI", lane: "status"}
+    {node: "/country/US/state/WY", lane: "status"}
+    {node: "/country/US/territory/DC", lane: "status"}
+  }
+}

@@ -1,0 +1,3 @@
+{
+  sites: {{node: "/site/19754", licensee: "CELLCO PARTNERSHIP", callsign: "KNKA230", structure: "TOWER", address: "900 V STREET NE", city: "WASHINGTON", county: "WASHINGTON", state: "DC", coordinates: {-76.990502,38.916408}}, {node: "/site/19756", licensee: "CELLCO PARTNERSHIP", callsign: "KNKA230", structure: "BANT", address: "2001 EAST CAPITOL STREET", city: "WASHINGTON", county: "WASHINGTON", state: "DC", coordinates: {-76.971102,38.890308}}, {node: "/site/19764", licensee: "CELLCO PARTNERSHIP", callsign: "KNKA230", structure: "BANT", address: "1375 EAST STREET NE", city: "WASHINGTON", county: "WASHINGTON", state: "DC", coordinates: {-76.986102,38.895808}}}
+}

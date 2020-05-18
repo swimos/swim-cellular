@@ -1,0 +1,17 @@
+# Ignore generated directories
+build
+dist
+lib
+node_modules
+out
+
+# Ignore generated files
+.gradle
+.idea
+.tsbuildinfo
+.vscode
+package-lock.json
+
+# Ignore system files
+.DS_Store
+*.DS_Store

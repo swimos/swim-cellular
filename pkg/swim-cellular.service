@@ -1,0 +1,13 @@
+[Unit]
+Description=Swim Cellular
+Wants=network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/swim-cellular
+ExecStart=/opt/swim-cellular/bin/swim-cellular
+User=swim-cellular
+Restart=on-failure
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

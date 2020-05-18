@@ -1,0 +1,39 @@
+{
+  "name": "@swim/cellular",
+  "version": "0.1.0",
+  "description": "Cellular Network Simulator",
+  "homepage": "https://github.com/swimos/cellular",
+  "author": "Chris Sachs <chris@swim.ai>",
+  "copyright": "2020 Swim inc.",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/swimos/cellular.git",
+  "private": true,
+  "main": "dist/main/swim-cellular.js",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "7",
+    "@swim/core": "^3.11.0-dev.20200517",
+    "@swim/mesh": "^3.11.0-dev.20200517",
+    "@swim/ui": "^3.11.0-dev.20200517",
+    "@swim/ux": "^3.11.0-dev.20200517",
+    "@swim/vis": "^3.11.0-dev.20200517",
+    "@swim/maps": "^3.11.0-dev.20200517",
+    "rollup": "2.10",
+    "rollup-plugin-sourcemaps": "0.6",
+    "tslib": "2",
+    "tslint": "6",
+    "typescript": "3.9"
+  },
+  "scripts": {
+    "compile": "tsc -b",
+    "bundle": "rollup -c",
+    "copy-app": "cp build/rollup/* src/main/resources/ui",
+    "copy-core": "cp node_modules/@swim/core/dist/main/*.min.js* src/main/resources/ui",
+    "copy-mesh": "cp node_modules/@swim/mesh/dist/main/*.min.js* src/main/resources/ui",
+    "copy-ui": "cp node_modules/@swim/ui/dist/main/*.min.js* src/main/resources/ui",
+    "copy-ux": "cp node_modules/@swim/ux/dist/main/*.min.js* src/main/resources/ui",
+    "copy-vis": "cp node_modules/@swim/vis/dist/main/*.min.js* src/main/resources/ui",
+    "copy-maps": "cp node_modules/@swim/maps/dist/main/*.min.js* src/main/resources/ui",
+    "copy-libs": "npm run copy-core && npm run copy-mesh && npm run copy-ui && npm run copy-ux && npm run copy-vis && npm run copy-maps",
+    "build": "npm run compile && npm run bundle && npm run copy-app"
+  }
+}
