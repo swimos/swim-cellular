@@ -8,6 +8,9 @@ import swim.web.WebResponse;
 import swim.web.WebRoute;
 import swim.web.route.ResourceDirectoryRoute;
 
+/**
+ * SwimOS kernel module for routing HTTP requests for the bundled UI.
+ */
 public class CellularUiRouter extends KernelProxy {
   final double kernelPriority;
   final WebRoute uiRoute;

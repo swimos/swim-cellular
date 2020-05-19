@@ -9,6 +9,9 @@ import swim.json.Json;
 import swim.recon.Recon;
 import swim.structure.Value;
 
+/**
+ * Utilities for loading and parsing configuration resources.
+ */
 public final class CellularResources {
   private CellularResources() {
     // static
