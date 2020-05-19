@@ -29,8 +29,8 @@ import {
 import {SiteMapView} from "./SiteMapView";
 
 const INFO_COLOR = Color.parse("#44d7b6").alpha(0.1);
-const WARN_COLOR = Color.parse("#f9f070").alpha(0.1);
-const ALERT_COLOR = Color.parse("#f6511d").alpha(0.1);
+const WARN_COLOR = Color.parse("#f9f070").alpha(0.25);
+const ALERT_COLOR = Color.parse("#f6511d").alpha(0.5);
 const WARN_INTERPOLATOR = ColorInterpolator.between(INFO_COLOR, WARN_COLOR);
 const ALERT_INTERPOLATOR = ColorInterpolator.between(WARN_COLOR, ALERT_COLOR);
 const STATUS_TWEEN = Transition.duration<any>(5000, Ease.cubicOut);
@@ -68,7 +68,7 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
     this._sitesLink = null;
   }
 
-  @MemberAnimator(Color, {value: Color.parse("#44d7b6").alpha(0.1)})
+  @MemberAnimator(Color)
   fill: MemberAnimator<this, Color, AnyColor>;
 
   @MemberAnimator(Color)
@@ -85,11 +85,21 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
     const warnRatio = warnCount / siteCount;
     const alertRatio = alertCount / siteCount;
     if (alertRatio > 0.015) {
-      this.fill(ALERT_INTERPOLATOR.interpolate(Math.min((1 / 0.005) * (alertRatio - 0.015), 1)), STATUS_TWEEN);
+      const u = Math.min((1 / 0.015) * (alertRatio - 0.015), 1);
+      const color = ALERT_INTERPOLATOR.interpolate(u);
+      this.fill(color.alpha(0.25 + 0.25 * u), STATUS_TWEEN)
+          .stroke(color.alpha(0.5 + 0.25 * u), STATUS_TWEEN)
+          .strokeWidth(1 + u, STATUS_TWEEN);
     } else if (warnRatio > 0.15) {
-      this.fill(WARN_INTERPOLATOR.interpolate(Math.min((1 / 0.05) * (warnRatio - 0.15), 1)), STATUS_TWEEN);
+      const u = Math.min((1 / 0.15) * (warnRatio - 0.15), 1);
+      const color = WARN_INTERPOLATOR.interpolate(u);
+      this.fill(color.alpha(0.1 + 0.15 * u), STATUS_TWEEN)
+          .stroke(color.alpha(0.2 + 0.3 * u), STATUS_TWEEN)
+          .strokeWidth(1, STATUS_TWEEN);
     } else {
-      this.fill(INFO_COLOR, STATUS_TWEEN);
+      this.fill(INFO_COLOR.alpha(0.1), STATUS_TWEEN)
+          .stroke(INFO_COLOR.alpha(0.2), STATUS_TWEEN)
+          .strokeWidth(1, STATUS_TWEEN);
     }
   }
 

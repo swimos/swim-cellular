@@ -866,8 +866,8 @@
     }(map.MapCircleView));
 
     var INFO_COLOR$1 = ui.Color.parse("#44d7b6").alpha(0.1);
-    var WARN_COLOR$1 = ui.Color.parse("#f9f070").alpha(0.1);
-    var ALERT_COLOR$1 = ui.Color.parse("#f6511d").alpha(0.1);
+    var WARN_COLOR$1 = ui.Color.parse("#f9f070").alpha(0.25);
+    var ALERT_COLOR$1 = ui.Color.parse("#f6511d").alpha(0.5);
     var WARN_INTERPOLATOR$1 = ui.ColorInterpolator.between(INFO_COLOR$1, WARN_COLOR$1);
     var ALERT_INTERPOLATOR$1 = ui.ColorInterpolator.between(WARN_COLOR$1, ALERT_COLOR$1);
     var STATUS_TWEEN$1 = ui.Transition.duration(5000, ui.Ease.cubicOut);
@@ -893,13 +893,23 @@
             var warnRatio = warnCount / siteCount;
             var alertRatio = alertCount / siteCount;
             if (alertRatio > 0.015) {
-                this.fill(ALERT_INTERPOLATOR$1.interpolate(Math.min((1 / 0.005) * (alertRatio - 0.015), 1)), STATUS_TWEEN$1);
+                var u = Math.min((1 / 0.015) * (alertRatio - 0.015), 1);
+                var color = ALERT_INTERPOLATOR$1.interpolate(u);
+                this.fill(color.alpha(0.25 + 0.25 * u), STATUS_TWEEN$1)
+                    .stroke(color.alpha(0.5 + 0.25 * u), STATUS_TWEEN$1)
+                    .strokeWidth(1 + u, STATUS_TWEEN$1);
             }
             else if (warnRatio > 0.15) {
-                this.fill(WARN_INTERPOLATOR$1.interpolate(Math.min((1 / 0.05) * (warnRatio - 0.15), 1)), STATUS_TWEEN$1);
+                var u = Math.min((1 / 0.15) * (warnRatio - 0.15), 1);
+                var color = WARN_INTERPOLATOR$1.interpolate(u);
+                this.fill(color.alpha(0.1 + 0.15 * u), STATUS_TWEEN$1)
+                    .stroke(color.alpha(0.2 + 0.3 * u), STATUS_TWEEN$1)
+                    .strokeWidth(1, STATUS_TWEEN$1);
             }
             else {
-                this.fill(INFO_COLOR$1, STATUS_TWEEN$1);
+                this.fill(INFO_COLOR$1.alpha(0.1), STATUS_TWEEN$1)
+                    .stroke(INFO_COLOR$1.alpha(0.2), STATUS_TWEEN$1)
+                    .strokeWidth(1, STATUS_TWEEN$1);
             }
         };
         RegionMapView.prototype.onSetGeometry = function (newGeometry) {
@@ -1082,7 +1092,7 @@
             }
         };
         __decorate([
-            ui.MemberAnimator(ui.Color, { value: ui.Color.parse("#44d7b6").alpha(0.1) })
+            ui.MemberAnimator(ui.Color)
         ], RegionMapView.prototype, "fill", void 0);
         __decorate([
             ui.MemberAnimator(ui.Color)
