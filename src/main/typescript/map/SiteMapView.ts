@@ -1,6 +1,15 @@
 import {Value} from "@swim/core";
 import {NodeRef} from "@swim/mesh";
-import {Color, ColorInterpolator, Ease, Transition} from "@swim/ui";
+import {
+  AnyLength,
+  Length,
+  AnyColor,
+  Color,
+  ColorInterpolator,
+  Ease,
+  Transition,
+  MemberAnimator,
+} from "@swim/ui";
 import {MapView, MapCircleView} from "@swim/map";
 
 const INFO_COLOR = Color.parse("#44d7b6");
@@ -19,21 +28,28 @@ export class SiteMapView extends MapCircleView {
     this._nodeRef = nodeRef;
   }
 
+  @MemberAnimator(Color)
+  fill: MemberAnimator<this, Color, AnyColor>;
+
+  @MemberAnimator(Color)
+  stroke: MemberAnimator<this, Color, AnyColor>;
+
+  @MemberAnimator(Color)
+  strokeWidth: MemberAnimator<this, Length, AnyLength>;
+
   onSetStatus(newStatus: Value): void {
     //console.log(this._nodeRef.nodeUri() + " onSetStatus:", newStatus.toAny());
-    const severity = newStatus.get("severity").numberValue(void 0);
-    if (severity !== void 0) {
-      if (severity === 0) {
-        this.fill(INFO_COLOR, STATUS_TWEEN);
-      } else if (severity <= 1) {
-        const color = WARN_INTERPOLATOR.interpolate(severity);
-        this.fill(color, STATUS_TWEEN);
-        this.ripple(color, 1, 2500);
-      } else {
-        const color = ALERT_INTERPOLATOR.interpolate(severity - 1);
-        this.fill(color, STATUS_TWEEN);
-        this.ripple(color, 2, 5000);
-      }
+    const severity = newStatus.get("severity").numberValue(0);
+    if (severity === 0) {
+      this.fill(INFO_COLOR, STATUS_TWEEN);
+    } else if (severity <= 1) {
+      const color = WARN_INTERPOLATOR.interpolate(severity);
+      this.fill(color, STATUS_TWEEN);
+      this.ripple(color, 1, 2500);
+    } else {
+      const color = ALERT_INTERPOLATOR.interpolate(severity - 1);
+      this.fill(color, STATUS_TWEEN);
+      this.ripple(color, 2, 5000);
     }
   }
 

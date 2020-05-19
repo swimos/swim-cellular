@@ -813,21 +813,19 @@
             return _this;
         }
         SiteMapView.prototype.onSetStatus = function (newStatus) {
-            var severity = newStatus.get("severity").numberValue(void 0);
-            if (severity !== void 0) {
-                if (severity === 0) {
-                    this.fill(INFO_COLOR, STATUS_TWEEN);
-                }
-                else if (severity <= 1) {
-                    var color = WARN_INTERPOLATOR.interpolate(severity);
-                    this.fill(color, STATUS_TWEEN);
-                    this.ripple(color, 1, 2500);
-                }
-                else {
-                    var color = ALERT_INTERPOLATOR.interpolate(severity - 1);
-                    this.fill(color, STATUS_TWEEN);
-                    this.ripple(color, 2, 5000);
-                }
+            var severity = newStatus.get("severity").numberValue(0);
+            if (severity === 0) {
+                this.fill(INFO_COLOR, STATUS_TWEEN);
+            }
+            else if (severity <= 1) {
+                var color = WARN_INTERPOLATOR.interpolate(severity);
+                this.fill(color, STATUS_TWEEN);
+                this.ripple(color, 1, 2500);
+            }
+            else {
+                var color = ALERT_INTERPOLATOR.interpolate(severity - 1);
+                this.fill(color, STATUS_TWEEN);
+                this.ripple(color, 2, 5000);
             }
         };
         SiteMapView.prototype.ripple = function (color, width, duration) {
@@ -862,6 +860,15 @@
             enumerable: false,
             configurable: true
         });
+        __decorate([
+            ui.MemberAnimator(ui.Color)
+        ], SiteMapView.prototype, "fill", void 0);
+        __decorate([
+            ui.MemberAnimator(ui.Color)
+        ], SiteMapView.prototype, "stroke", void 0);
+        __decorate([
+            ui.MemberAnimator(ui.Color)
+        ], SiteMapView.prototype, "strokeWidth", void 0);
         return SiteMapView;
     }(map.MapCircleView));
 
