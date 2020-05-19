@@ -36,7 +36,7 @@ const hostParam = baseUri.query().get("host");
 let hostUri;
 if (hostParam) {
   hostUri = swim.Uri.parse(hostParam);
-} else if (baseUri.hostName()) {
+} else if (baseUri.host().toString()) {
   hostUri = baseUri.base().schemeName(baseUri.schemeName() === "https" ? "warps" : "warp");
 } else {
   hostUri = swim.Uri.parse("warp://localhost:9001");
@@ -47,7 +47,6 @@ const rootNodeRef = hostRef.nodeRef("/country/US");
 
 const rootRegionMapView = new swim.cellular.RegionMapView(rootNodeRef);
 mapView.append(rootRegionMapView);
-//rootRegionMapView.tileOutlineColor("#cc0000");
 
     </script>
   </body>
