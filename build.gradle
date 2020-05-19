@@ -147,6 +147,22 @@ afterEvaluate {
     }
   }
 
+  task copyResources(type: Copy) {
+    from project.tasks.jar.outputs
+    from configurations.runtimeClasspath
+    into "${buildDir}/docker/libs"
+  }
+
+  task copyDockerfile(type: Copy) {
+    from "docker/Dockerfile"
+    into "${buildDir}/docker"
+  }
+
+  task dockerBuildImage() {
+    dependsOn copyResources
+    dependsOn copyDockerfile
+  }
+
   ospackage {
     release '1'
     prefix '/opt/swim-cellular'
