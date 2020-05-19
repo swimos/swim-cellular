@@ -5,6 +5,7 @@ import java.util.Iterator;
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
 import swim.api.lane.JoinValueLane;
+import swim.api.lane.MapLane;
 import swim.api.lane.ValueLane;
 import swim.cellular.CellularResources;
 import swim.structure.Item;
@@ -15,7 +16,7 @@ import swim.uri.Uri;
 
 public class RanAgent extends AbstractAgent {
 
-  long lastStatusTime;
+  long lastAnalyzeTime;
 
   @SwimLane("info")
   ValueLane<Value> info;
@@ -27,14 +28,26 @@ public class RanAgent extends AbstractAgent {
   JoinValueLane<Value, Value> sites = this.<Value, Value>joinValueLane()
     .didUpdate(this::didUpdateSiteStatus);
 
+  @SwimLane("alerts")
+  MapLane<Value, Value> alerts;
+
   void didUpdateSiteStatus(Value key, Value newSiteStatus, Value oldSiteStatus) {
-    final long t = System.currentTimeMillis();
-    if (t - this.lastStatusTime > 1000L) {
-      lastStatusTime = t;
-    } else {
-      return;
+    final double newSeverity = newSiteStatus.get("severity").doubleValue(0.0);
+    final double oldSeverity = oldSiteStatus.get("severity").doubleValue(0.0);
+    if (newSeverity > 1.0) {
+      this.alerts.put(key, newSiteStatus);
+    } else if (oldSeverity > 1.0) {
+      this.alerts.remove(key);
     }
 
+    final long t = System.currentTimeMillis();
+    if (t - this.lastAnalyzeTime > 1000L) {
+      lastAnalyzeTime = t;
+      analyzeRanStatus();
+    }
+  }
+
+  protected void analyzeRanStatus() {
     int siteCount = 0;
     int warnCount = 0;
     int alertCount = 0;
@@ -73,13 +86,15 @@ public class RanAgent extends AbstractAgent {
       seedSites.forEach((Item seedSite) -> {
         final Value key = seedSite.get("node");
         final Uri nodeUri = seedSite.get("node").cast(Uri.form());
-        final Uri laneUri = Uri.parse("status");
+        final Uri infoLaneUri = Uri.parse("info");
+        final Uri statusLaneUri = Uri.parse("status");
 
-        command(nodeUri, laneUri, Record.of(Slot.of("coordinates", seedSite.get("coordinates"))));
+        command(nodeUri, infoLaneUri, seedSite.toValue());
+        command(nodeUri, statusLaneUri, Record.of(Slot.of("coordinates", seedSite.get("coordinates"))));
 
         this.sites.downlink(key)
             .nodeUri(nodeUri)
-            .laneUri(laneUri)
+            .laneUri(statusLaneUri)
             .open();
       });
     }

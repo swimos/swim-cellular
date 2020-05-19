@@ -1,16 +1,13 @@
 import {Value} from "@swim/core";
 import {NodeRef} from "@swim/mesh";
 import {
-  AnyLength,
-  Length,
-  AnyColor,
   Color,
   ColorInterpolator,
   Ease,
   Transition,
-  MemberAnimator,
 } from "@swim/ui";
 import {MapView, MapCircleView} from "@swim/map";
+import {SiteMapPopoverView} from "./SiteMapPopoverView";
 
 const INFO_COLOR = Color.parse("#44d7b6");
 const WARN_COLOR = Color.parse("#f9f070");
@@ -22,35 +19,42 @@ const STATUS_TWEEN = Transition.duration<any>(500, Ease.cubicOut);
 export class SiteMapView extends MapCircleView {
   /** @hidden */
   readonly _nodeRef: NodeRef;
+  /** @hidden */
+  _statusColor: Color;
+  /** @hidden */
+  _popoverView: SiteMapPopoverView | null;
 
   constructor(nodeRef: NodeRef) {
     super();
+    this.onClick = this.onClick.bind(this);
+    this.fill._inherit = null;
+    this.stroke._inherit = null;
+    this.strokeWidth._inherit = null;
     this._nodeRef = nodeRef;
+    this._statusColor = INFO_COLOR;
+    this._popoverView = null;
   }
 
-  @MemberAnimator(Color)
-  fill: MemberAnimator<this, Color, AnyColor>;
-
-  @MemberAnimator(Color)
-  stroke: MemberAnimator<this, Color, AnyColor>;
-
-  @MemberAnimator(Color)
-  strokeWidth: MemberAnimator<this, Length, AnyLength>;
-
-  onSetStatus(newStatus: Value): void {
-    //console.log(this._nodeRef.nodeUri() + " onSetStatus:", newStatus.toAny());
+  didSetStatus(newStatus: Value): void {
+    //console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
+    let color: Color;
     const severity = newStatus.get("severity").numberValue(0);
-    if (severity === 0) {
-      this.fill(INFO_COLOR, STATUS_TWEEN);
-    } else if (severity <= 1) {
-      const color = WARN_INTERPOLATOR.interpolate(severity);
+    if (severity > 1) {
+      color = ALERT_INTERPOLATOR.interpolate(severity - 1);
+      this.fill(color, STATUS_TWEEN);
+      this.ripple(color, 2, 5000);
+    } else if (severity > 0) {
+      color = WARN_INTERPOLATOR.interpolate(severity);
       this.fill(color, STATUS_TWEEN);
       this.ripple(color, 1, 2500);
     } else {
-      const color = ALERT_INTERPOLATOR.interpolate(severity - 1);
-      this.fill(color, STATUS_TWEEN);
-      this.ripple(color, 2, 5000);
+      color = INFO_COLOR;
+      this.fill(INFO_COLOR, STATUS_TWEEN);
     }
+    if (this._popoverView !== null) {
+      this._popoverView.backgroundColor(color.darker(2).alpha(0.9), STATUS_TWEEN);
+    }
+    this._statusColor = color;
   }
 
   ripple(color: Color, width: number, duration: number): void {
@@ -68,6 +72,33 @@ export class SiteMapView extends MapCircleView {
       ripple.stroke(color.alpha(0), tween)
             .radius(radius, tween.onEnd(function () { ripple.remove(); }));
     }
+  }
+
+  protected onMount(): void {
+    super.onMount();
+    this.on("click", this.onClick);
+  }
+
+  protected onUnmount(): void {
+    this.off("click", this.onClick);
+    super.onUnmount();
+  }
+
+  protected onClick(event: MouseEvent): void {
+    //console.log(this._nodeRef.nodeUri() + " onClick");
+    event.stopPropagation();
+    let popoverView = this._popoverView;
+    if (popoverView === null) {
+      popoverView = new SiteMapPopoverView(this._nodeRef);
+      popoverView.setSource(this);
+      popoverView.hideModal();
+      popoverView.backgroundColor.didUpdate = function () {
+        popoverView!.place();
+      };
+      this._popoverView = popoverView;
+    }
+    popoverView.backgroundColor(this._statusColor.darker(2).alpha(0.9));
+    this.rootView!.toggleModal(popoverView, {multi: event.altKey});
   }
 
   get rootMapView(): MapView {
