@@ -126,6 +126,9 @@ afterEvaluate {
     if (useModules) {
       doFirst {
         defaultJvmOpts += [
+          '-Dswim.config=/etc/swim-cellular/server.recon',
+          '-Xms12g',
+          '-Xmx12g',
           '--module-path', 'APP_HOME_LIBS',
         ] + moduleArgs + [
           '--module', "${moduleName}/${mainClassName}",
