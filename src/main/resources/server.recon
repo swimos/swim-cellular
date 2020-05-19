@@ -1,6 +1,6 @@
 @kernel(class: "swim.store.db.DbStoreKernel", optional: true)
-@kernel(class: "swim.meta.MetaKernel", optional: true)
-@kernel(class: "swim.cellular.CellularUiRouter", optional: true)
+@kernel(class: "swim.meta.MetaKernel")
+@kernel(class: "swim.cellular.CellularUiRouter")
 
 cellular: @fabric {
   @plane(class: "swim.cellular.CellularPlane")

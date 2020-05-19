@@ -865,6 +865,12 @@
         return SiteMapView;
     }(map.MapCircleView));
 
+    var INFO_COLOR$1 = ui.Color.parse("#44d7b6").alpha(0.1);
+    var WARN_COLOR$1 = ui.Color.parse("#f9f070").alpha(0.1);
+    var ALERT_COLOR$1 = ui.Color.parse("#f6511d").alpha(0.1);
+    var WARN_INTERPOLATOR$1 = ui.ColorInterpolator.between(INFO_COLOR$1, WARN_COLOR$1);
+    var ALERT_INTERPOLATOR$1 = ui.ColorInterpolator.between(WARN_COLOR$1, ALERT_COLOR$1);
+    var STATUS_TWEEN$1 = ui.Transition.duration(5000, ui.Ease.cubicOut);
     var RegionMapView = (function (_super) {
         __extends(RegionMapView, _super);
         function RegionMapView(nodeRef) {
@@ -881,6 +887,20 @@
             return _this;
         }
         RegionMapView.prototype.onSetStatus = function (newStatus) {
+            var siteCount = newStatus.get("siteCount").numberValue(0);
+            var warnCount = newStatus.get("warnCount").numberValue(0);
+            var alertCount = newStatus.get("alertCount").numberValue(0);
+            var warnRatio = warnCount / siteCount;
+            var alertRatio = alertCount / siteCount;
+            if (alertRatio > 0.015) {
+                this.fill(ALERT_INTERPOLATOR$1.interpolate(Math.min((1 / 0.005) * (alertRatio - 0.015), 1)), STATUS_TWEEN$1);
+            }
+            else if (warnRatio > 0.15) {
+                this.fill(WARN_INTERPOLATOR$1.interpolate(Math.min((1 / 0.05) * (warnRatio - 0.15), 1)), STATUS_TWEEN$1);
+            }
+            else {
+                this.fill(INFO_COLOR$1, STATUS_TWEEN$1);
+            }
         };
         RegionMapView.prototype.onSetGeometry = function (newGeometry) {
             var minZoom = newGeometry.get("minZoom").numberValue(void 0);

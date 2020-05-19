@@ -3,6 +3,8 @@
     name: "District of Columbia"
   }
   geometry: {
+    maxZoom: 7
+    minSiteZoom: 7
     type: "Polygon"
     coordinates: {
       {{-77.035264, 38.993869}, {-76.909294, 38.895284}, {-77.040741, 38.791222}, {-77.117418, 38.933623}, {-77.035264, 38.993869}}

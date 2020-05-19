@@ -9,6 +9,9 @@ import {
   Length,
   AnyColor,
   Color,
+  ColorInterpolator,
+  Ease,
+  Transition,
   View,
   MemberAnimator,
   FillView,
@@ -24,6 +27,13 @@ import {
   MapPolygonView,
 } from "@swim/maps";
 import {SiteMapView} from "./SiteMapView";
+
+const INFO_COLOR = Color.parse("#44d7b6").alpha(0.1);
+const WARN_COLOR = Color.parse("#f9f070").alpha(0.1);
+const ALERT_COLOR = Color.parse("#f6511d").alpha(0.1);
+const WARN_INTERPOLATOR = ColorInterpolator.between(INFO_COLOR, WARN_COLOR);
+const ALERT_INTERPOLATOR = ColorInterpolator.between(WARN_COLOR, ALERT_COLOR);
+const STATUS_TWEEN = Transition.duration<any>(5000, Ease.cubicOut);
 
 export class RegionMapView extends MapLayerView implements FillView, StrokeView {
   /** @hidden */
@@ -69,7 +79,18 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
 
   onSetStatus(newStatus: Value): void {
     //console.log(this._nodeRef.nodeUri() + " onSetStatus: " + newStatus);
-    //const level = newStatus.get("level").numberValue(1);
+    const siteCount = newStatus.get("siteCount").numberValue(0);
+    const warnCount = newStatus.get("warnCount").numberValue(0);
+    const alertCount = newStatus.get("alertCount").numberValue(0);
+    const warnRatio = warnCount / siteCount;
+    const alertRatio = alertCount / siteCount;
+    if (alertRatio > 0.015) {
+      this.fill(ALERT_INTERPOLATOR.interpolate(Math.min((1 / 0.005) * (alertRatio - 0.015), 1)), STATUS_TWEEN);
+    } else if (warnRatio > 0.15) {
+      this.fill(WARN_INTERPOLATOR.interpolate(Math.min((1 / 0.05) * (warnRatio - 0.15), 1)), STATUS_TWEEN);
+    } else {
+      this.fill(INFO_COLOR, STATUS_TWEEN);
+    }
   }
 
   protected onSetGeometry(newGeometry: Value): void {

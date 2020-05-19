@@ -28,7 +28,7 @@ ext.swimVersion = project.property('swim.version')
 def javaVersion = System.getProperty('java.version').split('\\.')
 ext.jvmVersion = (javaVersion[0] as Integer) > 1 ? javaVersion[0] as Integer : javaVersion[1] as Integer
 ext.useModules = jvmVersion >= 9 && !hasProperty('no-modules')
-ext.moduleArgs = []
+ext.moduleArgs = ['--add-modules', 'swim.meta']
 
 repositories {
   mavenCentral()
@@ -38,6 +38,7 @@ repositories {
 dependencies {
   api group: 'org.swimos', name: 'swim-api', version: swimVersion
   implementation group: 'org.swimos', name: 'swim-server', version: swimVersion
+  runtimeOnly group: 'org.swimos', name: 'swim-meta', version: swimVersion
 }
 
 afterEvaluate {
