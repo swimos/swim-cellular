@@ -24,8 +24,12 @@ public class SiteAgent extends AbstractAgent {
   public void didStart() {
     // Launch an eNodeB agent in the same Swim Node as this agent.
     openAgent("eNodeB", ENodeBAgent.class);
+
     // Launch an eNodeB simulator in the same Swim Node as this agent.
     openAgent("eNodeBSim", ENodeBSimAgent.class);
+
+    // Launch an eNodeB connector in the same Swim Node as this agent.
+    //openAgent("eNodeBConnector", ENodeBConnectorAgent.class);
   }
 
 }
