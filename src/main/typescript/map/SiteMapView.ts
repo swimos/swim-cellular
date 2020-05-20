@@ -4,6 +4,7 @@ import {
   Color,
   ColorInterpolator,
   Ease,
+  Tween,
   Transition,
 } from "@swim/ui";
 import {MapView, MapCircleView} from "@swim/map";
@@ -35,24 +36,28 @@ export class SiteMapView extends MapCircleView {
     this._popoverView = null;
   }
 
-  didSetStatus(newStatus: Value): void {
+  didSetStatus(newStatus: Value, tween: Tween<any> = STATUS_TWEEN): void {
     //console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
     let color: Color;
     const severity = newStatus.get("severity").numberValue(0);
     if (severity > 1) {
       color = ALERT_INTERPOLATOR.interpolate(severity - 1);
-      this.fill(color, STATUS_TWEEN);
-      this.ripple(color, 2, 5000);
+      this.fill(color, tween);
+      if (tween !== false) {
+        this.ripple(color, 2, 5000);
+      }
     } else if (severity > 0) {
       color = WARN_INTERPOLATOR.interpolate(severity);
-      this.fill(color, STATUS_TWEEN);
-      this.ripple(color, 1, 2500);
+      this.fill(color, tween);
+      if (tween !== false) {
+        this.ripple(color, 1, 2500);
+      }
     } else {
       color = INFO_COLOR;
-      this.fill(INFO_COLOR, STATUS_TWEEN);
+      this.fill(INFO_COLOR, tween);
     }
     if (this._popoverView !== null) {
-      this._popoverView.backgroundColor(color.darker(2).alpha(0.9), STATUS_TWEEN);
+      this._popoverView.backgroundColor(color.darker(2).alpha(0.9), tween);
     }
     this._statusColor = color;
   }

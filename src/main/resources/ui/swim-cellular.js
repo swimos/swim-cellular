@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@swim/core'), require('@swim/ui'), require('@swim/map'), require('@swim/mapbox'), require('@swim/math'), require('@swim/view'), require('@swim/structure'), require('@swim/color'), require('@swim/font'), require('@swim/util'), require('@swim/codec'), require('@swim/length'), require('@swim/transition'), require('@swim/gesture'), require('@swim/angle'), require('@swim/transform')) :
-    typeof define === 'function' && define.amd ? define(['exports', '@swim/core', '@swim/ui', '@swim/map', '@swim/mapbox', '@swim/math', '@swim/view', '@swim/structure', '@swim/color', '@swim/font', '@swim/util', '@swim/codec', '@swim/length', '@swim/transition', '@swim/gesture', '@swim/angle', '@swim/transform'], factory) :
-    (global = global || self, factory((global.swim = global.swim || {}, global.swim.cellular = global.swim.cellular || {}), global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim));
-}(this, (function (exports, core, ui, map, mapbox, math, view, structure, color, font, util, codec, length, transition, gesture, angle, transform) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@swim/core'), require('@swim/ui'), require('@swim/map'), require('@swim/mapbox'), require('@swim/math'), require('@swim/view'), require('@swim/color'), require('@swim/font'), require('@swim/util'), require('@swim/codec'), require('@swim/structure'), require('@swim/length'), require('@swim/transition'), require('@swim/gesture'), require('@swim/angle'), require('@swim/transform'), require('@swim/gauge'), require('@swim/pie'), require('@swim/chart')) :
+    typeof define === 'function' && define.amd ? define(['exports', '@swim/core', '@swim/ui', '@swim/map', '@swim/mapbox', '@swim/math', '@swim/view', '@swim/color', '@swim/font', '@swim/util', '@swim/codec', '@swim/structure', '@swim/length', '@swim/transition', '@swim/gesture', '@swim/angle', '@swim/transform', '@swim/gauge', '@swim/pie', '@swim/chart'], factory) :
+    (global = global || self, factory((global.swim = global.swim || {}, global.swim.cellular = global.swim.cellular || {}), global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim, global.swim));
+}(this, (function (exports, core, ui, map, mapbox, math, view, color, font, util, codec, structure, length, transition, gesture, angle, transform, gauge) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -4313,51 +4313,50 @@
                 .overflowY("auto")
                 .color("#ffffff");
             this._titleView = content.append("div")
-                .paddingTop(16)
-                .paddingRight(16)
-                .paddingBottom(16)
-                .paddingLeft(16)
+                .marginTop(16)
+                .marginRight(16)
+                .marginBottom(16)
+                .marginLeft(16)
                 .fontSize(20)
                 .fontWeight("500");
             content.append("div")
-                .paddingRight(16)
-                .paddingLeft(16)
+                .marginRight(16)
+                .marginLeft(16)
                 .fontSize(16)
                 .fontWeight("bold")
                 .text("Status");
             this._statusTable = content.append("table")
                 .width("100%")
+                .marginBottom(16)
                 .paddingRight(16)
-                .paddingBottom(16)
                 .paddingLeft(16)
                 .fontSize(16);
             content.append("div")
-                .paddingRight(16)
-                .paddingLeft(16)
+                .marginRight(16)
+                .marginLeft(16)
                 .fontSize(16)
                 .fontWeight("bold")
                 .text("Info");
             this._infoTable = content.append("table")
                 .width("100%")
+                .marginBottom(16)
                 .paddingRight(16)
-                .paddingBottom(16)
                 .paddingLeft(16)
                 .fontSize(16);
             content.append("div")
-                .paddingRight(16)
-                .paddingLeft(16)
+                .marginRight(16)
+                .marginLeft(16)
                 .fontSize(16)
                 .fontWeight("bold")
                 .text("Alerts");
             this._alertsTable = content.append("table")
                 .width("100%")
+                .marginBottom(16)
                 .paddingRight(16)
-                .paddingBottom(16)
                 .paddingLeft(16)
                 .fontSize(16);
         };
         RegionMapPopoverView.prototype.didSetInfo = function (newInfo) {
-            console.log(this._nodeRef.nodeUri() + " didSetInfo:", newInfo.toAny());
             this._titleView.text(newInfo.get("name").stringValue(null));
             newInfo.forEach(function (item) {
                 var key = item.key.stringValue(void 0);
@@ -4380,7 +4379,7 @@
                         valueCell = tableRow.getChildView("value");
                     }
                     var value = item.toValue();
-                    if (value instanceof structure.Record) {
+                    if (value instanceof core.Record) {
                         valueCell.text(JSON.stringify(value.toAny()));
                     }
                     else {
@@ -4390,7 +4389,6 @@
             }, this);
         };
         RegionMapPopoverView.prototype.didSetStatus = function (newStatus) {
-            console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
             newStatus.forEach(function (item) {
                 var key = item.key.stringValue(void 0);
                 if (key !== void 0) {
@@ -4412,7 +4410,7 @@
                         valueCell = tableRow.getChildView("value");
                     }
                     var value = item.toValue();
-                    if (value instanceof structure.Record) {
+                    if (value instanceof core.Record) {
                         valueCell.text(JSON.stringify(value.toAny()));
                     }
                     else {
@@ -4423,7 +4421,6 @@
         };
         RegionMapPopoverView.prototype.didUpdateAlert = function (key, newAlert) {
             var siteNodeUri = key.stringValue(void 0);
-            console.log(this._nodeRef.nodeUri() + " didUpdateAlert " + siteNodeUri + ":", newAlert.toAny());
             if (siteNodeUri !== void 0) {
                 var tableRow = this._alertsTable.getChildView(siteNodeUri);
                 var valueCell = void 0;
@@ -4447,7 +4444,7 @@
                 else {
                     valueCell = tableRow.getChildView("value");
                 }
-                if (newAlert instanceof structure.Record) {
+                if (newAlert instanceof core.Record) {
                     var value = newAlert.deleted("coordinates");
                     if (value.length === 1 && value.get("severity").isDefined()) {
                         valueCell.text(value.get("severity").numberValue(0).toFixed(2));
@@ -4463,7 +4460,6 @@
         };
         RegionMapPopoverView.prototype.didRemoveAlert = function (key, oldAlert) {
             var siteNodeUri = key.stringValue(void 0);
-            console.log(this._nodeRef.nodeUri() + " didRemoveAlert " + siteNodeUri + ":", oldAlert.toAny());
             if (siteNodeUri !== void 0) {
                 this._alertsTable.removeChildView(siteNodeUri);
             }
@@ -4560,6 +4556,8 @@
             _this._nodeRef = nodeRef;
             _this._infoLink = null;
             _this._statusLink = null;
+            _this._kpisLink = null;
+            _this._historyLink = null;
             _this.initPopover();
             return _this;
         }
@@ -4574,39 +4572,74 @@
                 .overflowY("auto")
                 .color("#ffffff");
             this._titleView = content.append("div")
-                .paddingTop(16)
-                .paddingRight(16)
-                .paddingBottom(16)
-                .paddingLeft(16)
+                .marginTop(16)
+                .marginRight(16)
+                .marginBottom(16)
+                .marginLeft(16)
                 .fontSize(20)
                 .fontWeight("500");
             content.append("div")
+                .marginRight(16)
+                .marginLeft(16)
+                .fontSize(16)
+                .fontWeight("bold")
+                .text("KPIs");
+            this._kpisTable = content.append("table")
+                .width("100%")
+                .marginBottom(16)
                 .paddingRight(16)
                 .paddingLeft(16)
+                .fontSize(14);
+            content.append("div")
+                .marginRight(16)
+                .marginLeft(16)
+                .fontSize(16)
+                .fontWeight("bold")
+                .text("History");
+            var historyContainer = content.append("div")
+                .position("relative")
+                .height(120)
+                .marginBottom(16);
+            var historyCanvas = historyContainer.append("canvas");
+            this._historyChart = new gauge.ChartView()
+                .bottomAxis("time")
+                .leftAxis("linear")
+                .topGutter(8)
+                .leftGutter(32)
+                .rightGutter(32)
+                .leftDomainPadding([0.1, 0.1])
+                .bottomGesture(true)
+                .domainColor("#cccccc")
+                .tickMarkColor("#cccccc")
+                .font("12px sans-serif")
+                .textColor("#cccccc");
+            historyCanvas.append(this._historyChart);
+            content.append("div")
+                .marginRight(16)
+                .marginLeft(16)
                 .fontSize(16)
                 .fontWeight("bold")
                 .text("Status");
             this._statusTable = content.append("table")
                 .width("100%")
+                .marginBottom(16)
                 .paddingRight(16)
-                .paddingBottom(16)
                 .paddingLeft(16)
                 .fontSize(14);
             content.append("div")
-                .paddingRight(16)
-                .paddingLeft(16)
+                .marginRight(16)
+                .marginLeft(16)
                 .fontSize(16)
                 .fontWeight("bold")
                 .text("Info");
             this._infoTable = content.append("table")
                 .width("100%")
+                .marginBottom(16)
                 .paddingRight(16)
-                .paddingBottom(16)
                 .paddingLeft(16)
                 .fontSize(14);
         };
         SiteMapPopoverView.prototype.didSetInfo = function (newInfo) {
-            console.log(this._nodeRef.nodeUri() + " didSetInfo:", newInfo.toAny());
             this._titleView.text(newInfo.get("node").stringValue(null));
             newInfo.forEach(function (item) {
                 var key = item.key.stringValue(void 0);
@@ -4629,7 +4662,7 @@
                         valueCell = tableRow.getChildView("value");
                     }
                     var value = item.toValue();
-                    if (value instanceof structure.Record) {
+                    if (value instanceof core.Record) {
                         valueCell.text(JSON.stringify(value.toAny()));
                     }
                     else {
@@ -4639,7 +4672,6 @@
             }, this);
         };
         SiteMapPopoverView.prototype.didSetStatus = function (newStatus) {
-            console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
             newStatus.forEach(function (item) {
                 var key = item.key.stringValue(void 0);
                 if (key !== void 0 && key !== "coordinates") {
@@ -4661,7 +4693,7 @@
                         valueCell = tableRow.getChildView("value");
                     }
                     var value = item.toValue();
-                    if (value instanceof structure.Record) {
+                    if (value instanceof core.Record) {
                         valueCell.text(JSON.stringify(value.toAny()));
                     }
                     else {
@@ -4670,14 +4702,91 @@
                 }
             }, this);
         };
+        SiteMapPopoverView.prototype.didSetKpis = function (newKpis) {
+            newKpis.forEach(function (item) {
+                var key = item.key.stringValue(void 0);
+                if (key !== void 0) {
+                    var tableRow = this._kpisTable.getChildView(key);
+                    var valueCell = void 0;
+                    if (tableRow === null) {
+                        tableRow = this._kpisTable.append("tr", key)
+                            .color("#cccccc");
+                        tableRow.append("th", "key")
+                            .width("50%")
+                            .padding([2, 4, 2, 0])
+                            .textAlign("left")
+                            .text(key);
+                        valueCell = tableRow.append("td", "value")
+                            .width("50%")
+                            .padding([2, 0, 2, 4]);
+                    }
+                    else {
+                        valueCell = tableRow.getChildView("value");
+                    }
+                    var value = item.toValue();
+                    if (value instanceof core.Record) {
+                        valueCell.text(JSON.stringify(value.toAny()));
+                    }
+                    else {
+                        valueCell.text(value.stringValue(null));
+                    }
+                }
+            }, this);
+        };
+        SiteMapPopoverView.prototype.didUpdateHistory = function (key, newSample) {
+            var t = new core.DateTime(key.numberValue(0));
+            newSample.forEach(function (item) {
+                var key = item.key.stringValue(void 0);
+                var value = item.numberValue(void 0);
+                if (key !== void 0 && key !== "recorded_time" && value !== void 0) {
+                    var plot = this._historyChart.getChildView(key);
+                    if (plot === null) {
+                        plot = new gauge.LineGraphView()
+                            .hitMode("data")
+                            .stroke("#ffffff")
+                            .strokeWidth(2)
+                            .on("mouseover", function (event) {
+                            var datum = event.targetView;
+                            var y = datum.y.value;
+                            datum.label(ui.TextRunView.fromAny({
+                                text: y.toFixed(2) + "  " + key,
+                            }));
+                        })
+                            .on("mouseout", function (event) {
+                            var datum = event.targetView;
+                            datum.label(null);
+                        });
+                        this._historyChart.setChildView(key, plot);
+                    }
+                    plot.insertDatum({ x: t, y: value });
+                }
+            }, this);
+        };
+        SiteMapPopoverView.prototype.didRemoveHistory = function (key, oldSample) {
+            var t = new core.DateTime(key.numberValue(0));
+            oldSample.forEach(function (item) {
+                var key = item.key.stringValue(void 0);
+                var value = item.numberValue(void 0);
+                if (key !== void 0 && key !== "recorded_time" && value !== void 0) {
+                    var plot = this._historyChart.getChildView(key);
+                    if (plot !== null) {
+                        plot.removeDatum(t);
+                    }
+                }
+            }, this);
+        };
         SiteMapPopoverView.prototype.onMount = function () {
             _super.prototype.onMount.call(this);
             this.linkInfo();
             this.linkStatus();
+            this.linkKpis();
+            this.linkHistory();
         };
         SiteMapPopoverView.prototype.onUnmount = function () {
             this.unlinkInfo();
             this.unlinkStatus();
+            this.unlinkKpis();
+            this.unlinkHistory();
             _super.prototype.onUnmount.call(this);
         };
         SiteMapPopoverView.prototype.didHide = function () {
@@ -4712,6 +4821,35 @@
                 this._statusLink = null;
             }
         };
+        SiteMapPopoverView.prototype.linkKpis = function () {
+            if (this._kpisLink === null) {
+                this._kpisLink = this._nodeRef.downlinkValue()
+                    .laneUri("kpis")
+                    .didSet(this.didSetKpis.bind(this))
+                    .open();
+            }
+        };
+        SiteMapPopoverView.prototype.unlinkKpis = function () {
+            if (this._kpisLink !== null) {
+                this._kpisLink.close();
+                this._kpisLink = null;
+            }
+        };
+        SiteMapPopoverView.prototype.linkHistory = function () {
+            if (this._historyLink === null) {
+                this._historyLink = this._nodeRef.downlinkMap()
+                    .laneUri("trueCallHistory")
+                    .didUpdate(this.didUpdateHistory.bind(this))
+                    .didRemove(this.didRemoveHistory.bind(this))
+                    .open();
+            }
+        };
+        SiteMapPopoverView.prototype.unlinkHistory = function () {
+            if (this._historyLink !== null) {
+                this._historyLink.close();
+                this._historyLink = null;
+            }
+        };
         return SiteMapPopoverView;
     }(PopoverView));
 
@@ -4734,25 +4872,30 @@
             _this._popoverView = null;
             return _this;
         }
-        SiteMapView.prototype.didSetStatus = function (newStatus) {
+        SiteMapView.prototype.didSetStatus = function (newStatus, tween) {
+            if (tween === void 0) { tween = STATUS_TWEEN; }
             var color;
             var severity = newStatus.get("severity").numberValue(0);
             if (severity > 1) {
                 color = ALERT_INTERPOLATOR.interpolate(severity - 1);
-                this.fill(color, STATUS_TWEEN);
-                this.ripple(color, 2, 5000);
+                this.fill(color, tween);
+                if (tween !== false) {
+                    this.ripple(color, 2, 5000);
+                }
             }
             else if (severity > 0) {
                 color = WARN_INTERPOLATOR.interpolate(severity);
-                this.fill(color, STATUS_TWEEN);
-                this.ripple(color, 1, 2500);
+                this.fill(color, tween);
+                if (tween !== false) {
+                    this.ripple(color, 1, 2500);
+                }
             }
             else {
                 color = INFO_COLOR;
-                this.fill(INFO_COLOR, STATUS_TWEEN);
+                this.fill(INFO_COLOR, tween);
             }
             if (this._popoverView !== null) {
-                this._popoverView.backgroundColor(color.darker(2).alpha(0.9), STATUS_TWEEN);
+                this._popoverView.backgroundColor(color.darker(2).alpha(0.9), tween);
             }
             this._statusColor = color;
         };
@@ -4841,7 +4984,8 @@
             _this._sitesLink = null;
             return _this;
         }
-        RegionMapView.prototype.didSetStatus = function (newStatus) {
+        RegionMapView.prototype.didSetStatus = function (newStatus, tween) {
+            if (tween === void 0) { tween = STATUS_TWEEN$1; }
             var siteCount = newStatus.get("siteCount").numberValue(0);
             var warnCount = newStatus.get("warnCount").numberValue(0);
             var alertCount = newStatus.get("alertCount").numberValue(0);
@@ -4852,26 +4996,26 @@
             if (alertRatio > 0.015) {
                 phase = Math.min((1 / 0.015) * (alertRatio - 0.015), 1);
                 color = ALERT_INTERPOLATOR$1.interpolate(phase);
-                this.fill(color.alpha(0.25 + 0.25 * phase), STATUS_TWEEN$1)
-                    .stroke(color.alpha(0.5 + 0.25 * phase), STATUS_TWEEN$1)
-                    .strokeWidth(1 + phase, STATUS_TWEEN$1);
+                this.fill(color.alpha(0.25 + 0.25 * phase), tween)
+                    .stroke(color.alpha(0.5 + 0.25 * phase), tween)
+                    .strokeWidth(1 + phase, tween);
             }
             else if (warnRatio > 0.15) {
                 phase = Math.min((1 / 0.15) * (warnRatio - 0.15), 1);
                 color = WARN_INTERPOLATOR$1.interpolate(phase);
-                this.fill(color.alpha(0.1 + 0.15 * phase), STATUS_TWEEN$1)
-                    .stroke(color.alpha(0.2 + 0.3 * phase), STATUS_TWEEN$1)
-                    .strokeWidth(1, STATUS_TWEEN$1);
+                this.fill(color.alpha(0.1 + 0.15 * phase), tween)
+                    .stroke(color.alpha(0.2 + 0.3 * phase), tween)
+                    .strokeWidth(1, tween);
             }
             else {
                 phase = 1;
                 color = INFO_COLOR$1;
-                this.fill(color.alpha(0.1), STATUS_TWEEN$1)
-                    .stroke(color.alpha(0.2), STATUS_TWEEN$1)
-                    .strokeWidth(1, STATUS_TWEEN$1);
+                this.fill(color.alpha(0.1), tween)
+                    .stroke(color.alpha(0.2), tween)
+                    .strokeWidth(1, tween);
             }
             if (this._popoverView !== null) {
-                this._popoverView.backgroundColor(color.darker(2).alpha(0.9), STATUS_TWEEN$1);
+                this._popoverView.backgroundColor(color.darker(2).alpha(0.9), tween);
             }
             this._statusColor = color;
             this._statusPhase = phase;
@@ -4930,9 +5074,12 @@
             if (subRegionMapView === null) {
                 var subRegionNodeRef = this._nodeRef.nodeRef(subRegionNodeUri);
                 subRegionMapView = new RegionMapView(subRegionNodeRef);
+                subRegionMapView.didSetStatus(newSubRegionStatus, false);
                 this.setChildView(subRegionNodeUri, subRegionMapView);
             }
-            subRegionMapView.didSetStatus(newSubRegionStatus);
+            else {
+                subRegionMapView.didSetStatus(newSubRegionStatus);
+            }
         };
         RegionMapView.prototype.didRemoveSubRegion = function (key, oldSubRegionStatus) {
             var subRegionNodeUri = key.stringValue();
@@ -4948,9 +5095,12 @@
                     .geoCenter(coordinates)
                     .radius(4)
                     .fill(this.fill.value.alpha(1));
+                siteMapView.didSetStatus(newSiteStatus, false);
                 this.setChildView(siteNodeUri, siteMapView);
             }
-            siteMapView.didSetStatus(newSiteStatus);
+            else {
+                siteMapView.didSetStatus(newSiteStatus);
+            }
         };
         RegionMapView.prototype.didRemoveSite = function (key, oldSiteStatus) {
             var siteNodeUri = key.stringValue();

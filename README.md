@@ -24,6 +24,10 @@ $ gradlew.bat run
 $ ./gradlew run
 ```
 
+### Viewing the UI
+
+Open a web browser to [http://localhost:9001](http://localhost:9001).
+
 ## Repository Structure
 
 ### Key files

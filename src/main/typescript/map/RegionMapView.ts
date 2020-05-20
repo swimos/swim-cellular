@@ -15,6 +15,7 @@ import {
   Color,
   ColorInterpolator,
   Ease,
+  Tween,
   Transition,
   View,
   MemberAnimator,
@@ -99,7 +100,7 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
   @MemberAnimator(Length)
   strokeWidth: MemberAnimator<this, Length, AnyLength>;
 
-  didSetStatus(newStatus: Value): void {
+  didSetStatus(newStatus: Value, tween: Tween<any> = STATUS_TWEEN): void {
     //console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
     const siteCount = newStatus.get("siteCount").numberValue(0);
     const warnCount = newStatus.get("warnCount").numberValue(0);
@@ -111,24 +112,24 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
     if (alertRatio > 0.015) {
       phase = Math.min((1 / 0.015) * (alertRatio - 0.015), 1);
       color = ALERT_INTERPOLATOR.interpolate(phase);
-      this.fill(color.alpha(0.25 + 0.25 * phase), STATUS_TWEEN)
-          .stroke(color.alpha(0.5 + 0.25 * phase), STATUS_TWEEN)
-          .strokeWidth(1 + phase, STATUS_TWEEN);
+      this.fill(color.alpha(0.25 + 0.25 * phase), tween)
+          .stroke(color.alpha(0.5 + 0.25 * phase), tween)
+          .strokeWidth(1 + phase, tween);
     } else if (warnRatio > 0.15) {
       phase = Math.min((1 / 0.15) * (warnRatio - 0.15), 1);
       color = WARN_INTERPOLATOR.interpolate(phase);
-      this.fill(color.alpha(0.1 + 0.15 * phase), STATUS_TWEEN)
-          .stroke(color.alpha(0.2 + 0.3 * phase), STATUS_TWEEN)
-          .strokeWidth(1, STATUS_TWEEN);
+      this.fill(color.alpha(0.1 + 0.15 * phase), tween)
+          .stroke(color.alpha(0.2 + 0.3 * phase), tween)
+          .strokeWidth(1, tween);
     } else {
       phase = 1;
       color = INFO_COLOR;
-      this.fill(color.alpha(0.1), STATUS_TWEEN)
-          .stroke(color.alpha(0.2), STATUS_TWEEN)
-          .strokeWidth(1, STATUS_TWEEN);
+      this.fill(color.alpha(0.1), tween)
+          .stroke(color.alpha(0.2), tween)
+          .strokeWidth(1, tween);
     }
     if (this._popoverView !== null) {
-      this._popoverView.backgroundColor(color.darker(2).alpha(0.9), STATUS_TWEEN);
+      this._popoverView.backgroundColor(color.darker(2).alpha(0.9), tween);
     }
     this._statusColor = color;
     this._statusPhase = phase;
@@ -190,9 +191,11 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
     if (subRegionMapView === null) {
       const subRegionNodeRef = this._nodeRef.nodeRef(subRegionNodeUri);
       subRegionMapView = new RegionMapView(subRegionNodeRef);
+      subRegionMapView.didSetStatus(newSubRegionStatus, false);
       this.setChildView(subRegionNodeUri, subRegionMapView);
+    } else {
+      subRegionMapView.didSetStatus(newSubRegionStatus);
     }
-    subRegionMapView.didSetStatus(newSubRegionStatus);
   }
 
   protected didRemoveSubRegion(key: Value, oldSubRegionStatus: Value): void {
@@ -212,9 +215,11 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
           .geoCenter(coordinates)
           .radius(4)
           .fill(this.fill.value!.alpha(1));
+      siteMapView.didSetStatus(newSiteStatus, false);
       this.setChildView(siteNodeUri, siteMapView);
+    } else {
+      siteMapView.didSetStatus(newSiteStatus);
     }
-    siteMapView.didSetStatus(newSiteStatus);
   }
 
   protected didRemoveSite(key: Value, oldSiteStatus: Value): void {

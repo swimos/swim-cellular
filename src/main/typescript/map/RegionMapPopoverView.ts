@@ -1,4 +1,4 @@
-import {Item, Value, Record} from "@swim/structure";
+import {Item, Value, Record} from "@swim/core";
 import {ValueDownlink, MapDownlink, NodeRef} from "@swim/mesh";
 import {Color, BoxShadow, HtmlView} from "@swim/ui";
 import {PopoverView} from "@swim/ux";
@@ -44,55 +44,55 @@ export class RegionMapPopoverView extends PopoverView {
         .color("#ffffff");
 
     this._titleView = content.append("div")
-        .paddingTop(16)
-        .paddingRight(16)
-        .paddingBottom(16)
-        .paddingLeft(16)
+        .marginTop(16)
+        .marginRight(16)
+        .marginBottom(16)
+        .marginLeft(16)
         .fontSize(20)
         .fontWeight("500");
 
     content.append("div")
-        .paddingRight(16)
-        .paddingLeft(16)
+        .marginRight(16)
+        .marginLeft(16)
         .fontSize(16)
         .fontWeight("bold")
         .text("Status");
     this._statusTable = content.append("table")
         .width("100%")
+        .marginBottom(16)
         .paddingRight(16)
-        .paddingBottom(16)
         .paddingLeft(16)
         .fontSize(16);
 
     content.append("div")
-        .paddingRight(16)
-        .paddingLeft(16)
+        .marginRight(16)
+        .marginLeft(16)
         .fontSize(16)
         .fontWeight("bold")
         .text("Info");
     this._infoTable = content.append("table")
         .width("100%")
+        .marginBottom(16)
         .paddingRight(16)
-        .paddingBottom(16)
         .paddingLeft(16)
         .fontSize(16);
 
     content.append("div")
-        .paddingRight(16)
-        .paddingLeft(16)
+        .marginRight(16)
+        .marginLeft(16)
         .fontSize(16)
         .fontWeight("bold")
         .text("Alerts");
     this._alertsTable = content.append("table")
         .width("100%")
+        .marginBottom(16)
         .paddingRight(16)
-        .paddingBottom(16)
         .paddingLeft(16)
         .fontSize(16);
   }
 
   didSetInfo(newInfo: Value): void {
-    console.log(this._nodeRef.nodeUri() + " didSetInfo:", newInfo.toAny());
+    //console.log(this._nodeRef.nodeUri() + " didSetInfo:", newInfo.toAny());
     this._titleView.text(newInfo.get("name").stringValue(null));
     newInfo.forEach(function (item: Item): void {
       const key = item.key.stringValue(void 0);
@@ -124,7 +124,7 @@ export class RegionMapPopoverView extends PopoverView {
   }
 
   didSetStatus(newStatus: Value): void {
-    console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
+    //console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
     newStatus.forEach(function (item: Item): void {
       const key = item.key.stringValue(void 0);
       if (key !== void 0) {
@@ -156,7 +156,7 @@ export class RegionMapPopoverView extends PopoverView {
 
   didUpdateAlert(key: Value, newAlert: Value): void {
     const siteNodeUri = key.stringValue(void 0);
-    console.log(this._nodeRef.nodeUri() + " didUpdateAlert " + siteNodeUri + ":", newAlert.toAny());
+    //console.log(this._nodeRef.nodeUri() + " didUpdateAlert " + siteNodeUri + ":", newAlert.toAny());
     if (siteNodeUri !== void 0) {
       let tableRow = this._alertsTable.getChildView(siteNodeUri) as HtmlView | null;
       let valueCell: HtmlView;
@@ -194,7 +194,7 @@ export class RegionMapPopoverView extends PopoverView {
 
   didRemoveAlert(key: Value, oldAlert: Value): void {
     const siteNodeUri = key.stringValue(void 0);
-    console.log(this._nodeRef.nodeUri() + " didRemoveAlert " + siteNodeUri + ":", oldAlert.toAny());
+    //console.log(this._nodeRef.nodeUri() + " didRemoveAlert " + siteNodeUri);
     if (siteNodeUri !== void 0) {
       this._alertsTable.removeChildView(siteNodeUri);
     }

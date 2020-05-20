@@ -27,65 +27,12 @@ public class ENodeBSimAgent extends AbstractAgent {
   ValueLane<Value> status;
 
   /**
-   * Latest trueCall data for a cell site updated by the simulation, shared with the cell site
-   * and eNodeB agents running in the same Swim Node as this sim agent.
+   * Latest trueCall data for a cell site updated by the simulation, shared
+   * with the cell site and eNodeB agents running in the same Swim Node as
+   * this sim agent.
    */
   @SwimLane("trueCallLatest")
-  ValueLane<Value> trueCallLatest = this.<Value>valueLane()
-      .didSet((newValue, oldValue) -> { // invoked when a new value is set to this lane
-    // add to history
-    this.trueCallHistory.put(newValue.get("recorded_time").longValue(), newValue);
-    computeKpis(newValue);
-  });
-
-  /**
-   * Time series of trueCall data for a cell site (only last 10 values are retained), updated from callback function
-   * in trueCallLatest lane. Shared with the cell site and eNodeB agents running in the same Swim Node as this sim agent.
-   */
-  @SwimLane("trueCallHistory")
-  MapLane<Long, Value> trueCallHistory = this.<Long, Value>mapLane()
-      .didUpdate((key, newValue, oldValue) -> { // invoked when a new (key,value) pair is added to this lane
-
-    // check if the size of this lane is greater than 10 and drop the lower elements from the map
-    final int dropCount = this.trueCallHistory.size() - 10;
-    if (dropCount > 0) {
-      this.trueCallHistory.drop(dropCount);
-    }
-  });
-
-  /**
-   * Compute running average of sinr and running total of rrc_re_establishment_failures
-   * @param newValue
-   */
-  private void computeKpis(Value newValue) {
-    final Value oldKpis = this.kpis.get();
-    // get the current count of the number of items received, initialize to 0
-    final int oldCount = oldKpis.get("count").intValue(0);
-
-    // newAve = ( (oldAve * oldCount) + newValue ) / (oldCount + 1)
-    final double aveSinr =
-        ( (oldKpis.get("avg_mean_ul_sinr").doubleValue(0) * oldCount) + newValue.get("mean_ul_sinr").intValue(0) ) / (oldCount + 1);
-
-    // newTotal = oldTotal + newValue
-    final long totalRrcFailures =
-        oldKpis.get("sum_rrc_re_establishment_failures").longValue(0) + newValue.get("rrc_re_establishment_failures").longValue(0);
-
-    // update the kpis lane with the computed values
-    final Value newKpis = oldKpis
-        .updated("avg_mean_ul_sinr", Math.round(aveSinr))
-        .updated("sum_rrc_re_establishment_failures", totalRrcFailures)
-        .updated("count", oldCount + 1);
-    this.kpis.set(newKpis);
-
-  }
-
-  /**
-   * Computed kpis from trueCall data for a cell site, updated from callback function in trueCallLatest lane. Shared
-   * with the cell site and eNodeB agents running in the same Swim Node as this sim agent.
-   */
-  @SwimLane("kpis")
-  ValueLane<Value> kpis;
-
+  ValueLane<Value> trueCallLatest;
 
   /**
    * Runs a single step of the eNodeB simulation.
@@ -106,21 +53,21 @@ public class ENodeBSimAgent extends AbstractAgent {
     // represents an alert.
     final double severity = category == 0 ? 0.0 : (category - 1) + Math.random();
 
-    // Update the status of the eNodeB with the newly computed alert severity.
+    // Update this eNodeB's status with the newly computed alert severity.
     final Value oldStatus = this.status.get();
     final Value newStatus = oldStatus.updated("severity", severity);
     this.status.set(newStatus);
 
-    // generate a random meanSinr value between 0 and 40
-    final int meanSinr = (int) Math.round(Math.random() * 40);
+    // Generate a random mean ul sinr value between 0 and 40.
+    final int meanUlSinr = (int) Math.round(Math.random() * 40);
 
-    // generate a random rrcReestablishmentFailures value between 1 and 9
+    // Generate a random rrc re-establishment failure count between 1 and 9.
     final long rrcReestablishmentFailures = (long) (1 + Math.random() * 9);
 
-    // Update the trueCallLatest lane of the eNodeB with the simulated data.
+    // Update this eNodeB's trueCallLatest lane with the simulated data.
     final Value oldTrueCallLatest = this.trueCallLatest.get();
     final Value newTrueCallLatest = oldTrueCallLatest
-        .updated("mean_ul_sinr", meanSinr)
+        .updated("mean_ul_sinr", meanUlSinr)
         .updated("rrc_re_establishment_failures", rrcReestablishmentFailures)
         .updated("recorded_time", System.currentTimeMillis());
     this.trueCallLatest.set(newTrueCallLatest);
