@@ -39,6 +39,40 @@ public class CellularUiRouter extends KernelProxy {
     }
   }
 
+  @Override
+  public void trace(Object message) {
+    // Use this hook to intercept and forward trace log messages
+  }
+
+  @Override
+  public void debug(Object message) {
+    // Use this hook to intercept and forward debug log messages
+  }
+
+  @Override
+  public void info(Object message) {
+    super.info(message);
+    // Use this hook to intercept and forward info log messages
+  }
+
+  @Override
+  public void warn(Object message) {
+    super.warn(message);
+    // Use this hook to intercept and forward warning log messages
+  }
+
+  @Override
+  public void error(Object message) {
+    super.error(message);
+    // Use this hook to intercept and forward error log messages
+  }
+
+  @Override
+  public void fail(Object message) {
+    super.fail(message);
+    // Use this hook to intercept and forward failure log messages
+  }
+
   private static final double KERNEL_PRIORITY = 100.0;
 
   public static CellularUiRouter fromValue(Value moduleConfig) {

@@ -6,6 +6,7 @@ import swim.api.lane.MapLane;
 import swim.api.lane.ValueLane;
 import swim.concurrent.TimerRef;
 import swim.observable.function.DidUpdateKey;
+import swim.structure.Record;
 import swim.structure.Value;
 
 /**
@@ -71,6 +72,7 @@ public class ENodeBSimAgent extends AbstractAgent {
         .updated("rrc_re_establishment_failures", rrcReestablishmentFailures)
         .updated("recorded_time", System.currentTimeMillis());
     this.trueCallLatest.set(newTrueCallLatest);
+    debug(Record.of("simulated true call sample", newTrueCallLatest));
   }
 
   /**
