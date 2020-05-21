@@ -1,7 +1,9 @@
 package swim.cellular;
 
+import swim.api.auth.Authenticator;
 import swim.api.plane.AbstractPlane;
-import swim.api.space.Space;
+import swim.api.plane.PlaneContext;
+import swim.api.policy.PlanePolicy;
 import swim.kernel.Kernel;
 import swim.server.ServerLoader;
 
@@ -17,7 +19,15 @@ public class CellularPlane extends AbstractPlane {
     // `server.recon` Java resource.
     final Kernel kernel = ServerLoader.loadServer();
     // Get a handle to the configured application plane.
-    final Space space = kernel.getSpace("cellular");
+    final PlaneContext plane = (PlaneContext) kernel.getSpace("cellular");
+
+    // Instantiate a custom authenticator.
+    final Authenticator authenticator = new CellularAuthenticator();
+    plane.addAuthenticator("test", authenticator);
+
+    // Initialize the access control policy.
+    final PlanePolicy policy = new CellularPolicy(plane);
+    plane.setPolicy(policy);
 
     // Boot the SwimOS kernel.
     kernel.start();

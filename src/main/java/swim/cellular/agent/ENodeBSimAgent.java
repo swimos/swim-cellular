@@ -72,7 +72,7 @@ public class ENodeBSimAgent extends AbstractAgent {
         .updated("rrc_re_establishment_failures", rrcReestablishmentFailures)
         .updated("recorded_time", System.currentTimeMillis());
     this.trueCallLatest.set(newTrueCallLatest);
-    debug(Record.of("simulated true call sample", newTrueCallLatest));
+    trace(Record.of("simulated true call sample", newTrueCallLatest));
   }
 
   /**

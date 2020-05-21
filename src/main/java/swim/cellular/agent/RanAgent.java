@@ -143,6 +143,12 @@ public class RanAgent extends AbstractAgent {
         this.sites.downlink(key)
             .nodeUri(nodeUri)
             .laneUri(statusLaneUri)
+            //.didConnect(() -> {
+            //  info(this.nodeUri() + " connected to site " + nodeUri);
+            //})
+            //.didDisconnect(() -> {
+            //  info(this.nodeUri() + " disconnected from site " + nodeUri);
+            //})
             .open();
       });
     }

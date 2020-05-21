@@ -33,6 +33,7 @@ ext.moduleArgs = ['--add-modules', 'swim.meta']
 repositories {
   mavenCentral()
   jcenter()
+  maven { url 'https://swimos.bintray.com/maven' }
 }
 
 dependencies {
