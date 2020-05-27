@@ -124,12 +124,12 @@ public class RanAgent extends AbstractAgent {
     if (seedResource != null) {
       final Value seedValue = CellularResources.loadReconResource(seedResource);
 
-      // Seed the cell sites in this radio access network, and joins the status
+      // Seed the cell sites in this radio access network, and join the status
       // lane of each cell site into the sites join-value lane.
       final Value seedSites = seedValue.get("sites");
       seedSites.forEach((Item seedSite) -> {
         final Value key = seedSite.get("node");
-        final Uri nodeUri = seedSite.get("node").cast(Uri.form());
+        final Uri nodeUri = key.cast(Uri.form());
         final Uri infoLaneUri = Uri.parse("info");
         final Uri statusLaneUri = Uri.parse("status");
 

@@ -17,6 +17,10 @@ cellular: @fabric {
     pattern: "/site/:id"
     @agent(class: "swim.cellular.agent.SiteAgent")
   }
+  @node {
+    pattern: "/site/:id/sector/:sid"
+    @agent(class: "swim.cellular.agent.SectorAgent")
+  }
 
   @node {
     uri: "/country/US/state/AL"

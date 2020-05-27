@@ -1,14 +1,24 @@
 import {Value} from "@swim/core";
-import {NodeRef} from "@swim/mesh";
+import {MapDownlink, NodeRef} from "@swim/mesh";
 import {
+  AnyColor,
   Color,
   ColorInterpolator,
   Ease,
   Tween,
   Transition,
+  View,
+  MemberAnimator,
 } from "@swim/ui";
-import {MapView, MapCircleView} from "@swim/map";
+import {
+  AnyGeoPoint,
+  MapViewContext,
+  MapView,
+  MapGroupView,
+  MapCircleView,
+} from "@swim/maps";
 import {SiteMapPopoverView} from "./SiteMapPopoverView";
+import {SectorMapView} from "./SectorMapView";
 
 const INFO_COLOR = Color.parse("#44d7b6");
 const WARN_COLOR = Color.parse("#f9f070");
@@ -17,9 +27,13 @@ const WARN_INTERPOLATOR = ColorInterpolator.between(INFO_COLOR, WARN_COLOR);
 const ALERT_INTERPOLATOR = ColorInterpolator.between(WARN_COLOR, ALERT_COLOR);
 const STATUS_TWEEN = Transition.duration<any>(500, Ease.cubicOut);
 
-export class SiteMapView extends MapCircleView {
+const MIN_SECTOR_ZOOM = 10;
+
+export class SiteMapView extends MapGroupView {
   /** @hidden */
   readonly _nodeRef: NodeRef;
+  /** @hidden */
+  _sectorsLink: MapDownlink<Value, Value> | null;
   /** @hidden */
   _statusColor: Color;
   /** @hidden */
@@ -28,16 +42,29 @@ export class SiteMapView extends MapCircleView {
   constructor(nodeRef: NodeRef) {
     super();
     this.onClick = this.onClick.bind(this);
-    this.fill._inherit = null;
-    this.stroke._inherit = null;
-    this.strokeWidth._inherit = null;
     this._nodeRef = nodeRef;
+    this._sectorsLink = null;
     this._statusColor = INFO_COLOR;
     this._popoverView = null;
   }
 
+  @MemberAnimator(Color)
+  fill: MemberAnimator<this, Color, AnyColor>;
+
+  @MemberAnimator(Color)
+  stroke: MemberAnimator<this, Color, AnyColor>;
+
+  @MemberAnimator(Number)
+  strokeWidth: MemberAnimator<this, number>;
+
   didSetStatus(newStatus: Value, tween: Tween<any> = STATUS_TWEEN): void {
     //console.log(this._nodeRef.nodeUri() + " didSetStatus:", newStatus.toAny());
+    let marker = this.getChildView("marker") as MapCircleView | null;
+    if (marker === null) {
+      const coordinates = newStatus.get("coordinates").toAny() as AnyGeoPoint;
+      marker = new MapCircleView().geoCenter(coordinates).radius(4);
+      this.setChildView("marker", marker);
+    }
     let color: Color;
     const severity = newStatus.get("severity").numberValue(0);
     if (severity > 1) {
@@ -65,8 +92,9 @@ export class SiteMapView extends MapCircleView {
   ripple(color: Color, width: number, duration: number): void {
     const rootMapView = this.rootMapView;
     if (!this.isHidden() && !this.isCulled() && !document.hidden && this.geoBounds.intersects(rootMapView.geoFrame)) {
+      const marker = this.getChildView("marker") as MapCircleView;
       const ripple = new MapCircleView()
-          .geoCenter(this.geoCenter.value)
+          .geoCenter(marker.geoCenter.value)
           .radius(0)
           .stroke(color)
           .strokeWidth(width);
@@ -77,33 +105,6 @@ export class SiteMapView extends MapCircleView {
       ripple.stroke(color.alpha(0), tween)
             .radius(radius, tween.onEnd(function () { ripple.remove(); }));
     }
-  }
-
-  protected onMount(): void {
-    super.onMount();
-    this.on("click", this.onClick);
-  }
-
-  protected onUnmount(): void {
-    this.off("click", this.onClick);
-    super.onUnmount();
-  }
-
-  protected onClick(event: MouseEvent): void {
-    //console.log(this._nodeRef.nodeUri() + " onClick");
-    event.stopPropagation();
-    let popoverView = this._popoverView;
-    if (popoverView === null) {
-      popoverView = new SiteMapPopoverView(this._nodeRef);
-      popoverView.setSource(this);
-      popoverView.hideModal();
-      popoverView.backgroundColor.didUpdate = function () {
-        popoverView!.place();
-      };
-      this._popoverView = popoverView;
-    }
-    popoverView.backgroundColor(this._statusColor.darker(2).alpha(0.9));
-    this.rootView!.toggleModal(popoverView, {multi: event.altKey});
   }
 
   get rootMapView(): MapView {
@@ -117,5 +118,120 @@ export class SiteMapView extends MapCircleView {
       break;
     } while (true);
     return rootMapView;
+  }
+
+  protected didUpdateSector(key: Value, newSectorStatus: Value): void {
+    //console.log(this._nodeRef.nodeUri() + " didUpdateSector " + key.toAny() + ":", newSectorStatus.toAny());
+    const sectorNodeUri = key.stringValue()!;
+    const azimuth = newSectorStatus.get("azimuth").stringValue()!;
+    let azimuthView = this.getChildView(azimuth) as MapGroupView | null;
+    if (azimuthView === null) {
+      azimuthView = new MapGroupView();
+      this.setChildView(azimuth, azimuthView);
+    }
+    let sectorMapView = azimuthView.getChildView(sectorNodeUri) as SectorMapView | null;
+    if (sectorMapView === null) {
+      const marker = this.getChildView("marker") as MapCircleView;
+      const sectorNodeRef = this._nodeRef.nodeRef(sectorNodeUri);
+      sectorMapView = new SectorMapView(sectorNodeRef)
+          .geoCenter(marker.geoCenter.value);
+      sectorMapView.didSetStatus(newSectorStatus, false);
+      azimuthView.setChildView(sectorNodeUri, sectorMapView);
+    } else {
+      sectorMapView.didSetStatus(newSectorStatus);
+    }
+  }
+
+  protected didRemoveSector(key: Value, oldSectorStatus: Value): void {
+    //console.log(this._nodeRef.nodeUri() + " didRemoveSector " + key.toAny() + ":", oldSectorStatus.toAny());
+    const sectorNodeUri = key.stringValue()!;
+    const azimuth = oldSectorStatus.get("azimuth").stringValue()!;
+    const azimuthView = this.getChildView(azimuth) as MapGroupView | null;
+    if (azimuthView !== null) {
+      azimuthView.removeChildView(sectorNodeUri);
+      if (azimuthView.childViews.length === 0) {
+        this.removeChildView(azimuthView);
+      }
+    }
+  }
+
+  protected onMount(): void {
+    super.onMount();
+  }
+
+  protected onUnmount(): void {
+    super.onUnmount();
+    this.unlinkSectors();
+  }
+
+  protected onInsertChildView(childView: View, targetView: View | null): void {
+    super.onInsertChildView(childView, targetView);
+    if (childView.key === "marker") {
+      childView.on("click", this.onClick);
+    }
+  }
+
+  protected onRemoveChildView(childView: View): void {
+    super.onRemoveChildView(childView);
+    if (childView.key === "marker") {
+      childView.off("click", this.onClick);
+    }
+  }
+
+  protected didProject(viewContext: MapViewContext): void {
+    if (viewContext.mapZoom >= MIN_SECTOR_ZOOM && this.geoBounds.intersects(viewContext.geoFrame)) {
+      this.linkSectors();
+    } else {
+      if (this._sectorsLink !== null) {
+        this.rootView!.dismissModals();
+      }
+      this.unlinkSectors();
+    }
+    super.didProject(viewContext);
+  }
+
+  protected onClick(event: MouseEvent): void {
+    //console.log(this._nodeRef.nodeUri() + " onClick");
+    event.stopPropagation();
+    let popoverView = this._popoverView;
+    if (popoverView === null) {
+      popoverView = new SiteMapPopoverView(this._nodeRef);
+      popoverView.setSource(this.getChildView("marker"));
+      popoverView.hideModal();
+      popoverView.backgroundColor.didUpdate = function () {
+        popoverView!.place();
+      };
+      this._popoverView = popoverView;
+    }
+    popoverView.backgroundColor(this._statusColor.darker(2).alpha(0.9));
+    this.rootView!.toggleModal(popoverView, {multi: event.altKey});
+  }
+
+  protected linkSectors(): void {
+    if (this._sectorsLink === null) {
+      //console.log(this._nodeRef.nodeUri() + " linkSectors");
+      this._sectorsLink = this._nodeRef.downlinkMap()
+          .laneUri("sectors")
+          .didUpdate(this.didUpdateSector.bind(this))
+          .didRemove(this.didRemoveSector.bind(this))
+          .open();
+    }
+  }
+
+  protected unlinkSectors(): void {
+    if (this._sectorsLink !== null) {
+      //console.log(this._nodeRef.nodeUri() + " unlinkSectors");
+      this._sectorsLink.close();
+      this._sectorsLink = null;
+      let i = 0;
+      while (i < this._childViews.length) {
+        const childView = this._childViews[i];
+        if (childView instanceof MapGroupView) {
+          childView.remove();
+        } else {
+          i += 1;
+        }
+      }
+    }
   }
 }

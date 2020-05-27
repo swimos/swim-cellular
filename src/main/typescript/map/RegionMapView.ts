@@ -210,11 +210,7 @@ export class RegionMapView extends MapLayerView implements FillView, StrokeView 
     let siteMapView = this.getChildView(siteNodeUri) as SiteMapView | null;
     if (siteMapView === null) {
       const siteNodeRef = this._nodeRef.nodeRef(siteNodeUri);
-      const coordinates = newSiteStatus.get("coordinates").toAny() as AnyGeoPoint;
-      siteMapView = new SiteMapView(siteNodeRef)
-          .geoCenter(coordinates)
-          .radius(4)
-          .fill(this.fill.value!.alpha(1));
+      siteMapView = new SiteMapView(siteNodeRef);
       siteMapView.didSetStatus(newSiteStatus, false);
       this.setChildView(siteNodeUri, siteMapView);
     } else {

@@ -4853,27 +4853,247 @@
         return SiteMapPopoverView;
     }(PopoverView));
 
+    var SectorMapPopoverView = (function (_super) {
+        __extends(SectorMapPopoverView, _super);
+        function SectorMapPopoverView(nodeRef) {
+            var _this = _super.call(this) || this;
+            _this._nodeRef = nodeRef;
+            _this._infoLink = null;
+            _this._statusLink = null;
+            _this.initPopover();
+            return _this;
+        }
+        SectorMapPopoverView.prototype.initPopover = function () {
+            this.width(320)
+                .height(480)
+                .borderRadius(16)
+                .boxShadow(ui.BoxShadow.of(0, 2, 4, 0, ui.Color.rgb(0, 0, 0, 0.5)))
+                .backgroundColor(ui.Color.parse("#1e2022").alpha(0.9));
+            var content = this.append("div")
+                .height("100%")
+                .overflowY("auto")
+                .color("#ffffff");
+            this._titleView = content.append("div")
+                .marginTop(16)
+                .marginRight(16)
+                .marginBottom(16)
+                .marginLeft(16)
+                .fontSize(20)
+                .fontWeight("500")
+                .text(this._nodeRef.nodeUri().toString());
+            content.append("div")
+                .marginRight(16)
+                .marginLeft(16)
+                .fontSize(16)
+                .fontWeight("bold")
+                .text("Status");
+            this._statusTable = content.append("table")
+                .width("100%")
+                .marginBottom(16)
+                .paddingRight(16)
+                .paddingLeft(16)
+                .fontSize(14);
+            content.append("div")
+                .marginRight(16)
+                .marginLeft(16)
+                .fontSize(16)
+                .fontWeight("bold")
+                .text("Info");
+            this._infoTable = content.append("table")
+                .width("100%")
+                .marginBottom(16)
+                .paddingRight(16)
+                .paddingLeft(16)
+                .fontSize(14);
+        };
+        SectorMapPopoverView.prototype.didSetInfo = function (newInfo) {
+            newInfo.forEach(function (item) {
+                var key = item.key.stringValue(void 0);
+                if (key !== void 0) {
+                    var tableRow = this._infoTable.getChildView(key);
+                    var valueCell = void 0;
+                    if (tableRow === null) {
+                        tableRow = this._infoTable.append("tr", key)
+                            .color("#cccccc");
+                        tableRow.append("th", "key")
+                            .width("50%")
+                            .padding([2, 4, 2, 0])
+                            .textAlign("left")
+                            .text(key);
+                        valueCell = tableRow.append("td", "value")
+                            .width("50%")
+                            .padding([2, 0, 2, 4]);
+                    }
+                    else {
+                        valueCell = tableRow.getChildView("value");
+                    }
+                    var value = item.toValue();
+                    if (value instanceof core.Record) {
+                        valueCell.text(JSON.stringify(value.toAny()));
+                    }
+                    else {
+                        valueCell.text(value.stringValue(null));
+                    }
+                }
+            }, this);
+        };
+        SectorMapPopoverView.prototype.didSetStatus = function (newStatus) {
+            newStatus.forEach(function (item) {
+                var key = item.key.stringValue(void 0);
+                if (key !== void 0 && key !== "coordinates") {
+                    var tableRow = this._statusTable.getChildView(key);
+                    var valueCell = void 0;
+                    if (tableRow === null) {
+                        tableRow = this._statusTable.append("tr", key)
+                            .color("#cccccc");
+                        tableRow.append("th", "key")
+                            .width("50%")
+                            .padding([2, 4, 2, 0])
+                            .textAlign("left")
+                            .text(key);
+                        valueCell = tableRow.append("td", "value")
+                            .width("50%")
+                            .padding([2, 0, 2, 4]);
+                    }
+                    else {
+                        valueCell = tableRow.getChildView("value");
+                    }
+                    var value = item.toValue();
+                    if (value instanceof core.Record) {
+                        valueCell.text(JSON.stringify(value.toAny()));
+                    }
+                    else {
+                        valueCell.text(value.stringValue(null));
+                    }
+                }
+            }, this);
+        };
+        SectorMapPopoverView.prototype.onMount = function () {
+            _super.prototype.onMount.call(this);
+            this.linkInfo();
+            this.linkStatus();
+        };
+        SectorMapPopoverView.prototype.onUnmount = function () {
+            this.unlinkInfo();
+            this.unlinkStatus();
+            _super.prototype.onUnmount.call(this);
+        };
+        SectorMapPopoverView.prototype.didHide = function () {
+            _super.prototype.didHide.call(this);
+            this.remove();
+        };
+        SectorMapPopoverView.prototype.linkInfo = function () {
+            if (this._infoLink === null) {
+                this._infoLink = this._nodeRef.downlinkValue()
+                    .laneUri("info")
+                    .didSet(this.didSetInfo.bind(this))
+                    .open();
+            }
+        };
+        SectorMapPopoverView.prototype.unlinkInfo = function () {
+            if (this._infoLink !== null) {
+                this._infoLink.close();
+                this._infoLink = null;
+            }
+        };
+        SectorMapPopoverView.prototype.linkStatus = function () {
+            if (this._statusLink === null) {
+                this._statusLink = this._nodeRef.downlinkValue()
+                    .laneUri("status")
+                    .didSet(this.didSetStatus.bind(this))
+                    .open();
+            }
+        };
+        SectorMapPopoverView.prototype.unlinkStatus = function () {
+            if (this._statusLink !== null) {
+                this._statusLink.close();
+                this._statusLink = null;
+            }
+        };
+        return SectorMapPopoverView;
+    }(PopoverView));
+
+    var STATUS_TWEEN = ui.Transition.duration(500, ui.Ease.cubicOut);
+    var SectorMapView = (function (_super) {
+        __extends(SectorMapView, _super);
+        function SectorMapView(nodeRef) {
+            var _this = _super.call(this) || this;
+            _this.onClick = _this.onClick.bind(_this);
+            _this._nodeRef = nodeRef;
+            _this._status = core.Value.absent();
+            _this._popoverView = null;
+            return _this;
+        }
+        SectorMapView.prototype.didSetStatus = function (newStatus, tween) {
+            if (tween === void 0) { tween = STATUS_TWEEN; }
+            this._status = newStatus;
+            if (this._popoverView !== null) {
+                this._popoverView.backgroundColor(this.fill.value.darker(2).alpha(0.9), tween);
+            }
+            this.requireUpdate(ui.View.NeedsProject);
+        };
+        SectorMapView.prototype.onMount = function () {
+            _super.prototype.onMount.call(this);
+            this.on("click", this.onClick);
+        };
+        SectorMapView.prototype.onUnmount = function () {
+            _super.prototype.onUnmount.call(this);
+            this.off("click", this.onClick);
+        };
+        SectorMapView.prototype.onProject = function (viewContext) {
+            _super.prototype.onProject.call(this, viewContext);
+            var index = this.parentView.childViews.indexOf(this);
+            var azimuth = this._status.get("azimuth").numberValue();
+            var sweep = this._status.get("sweep").numberValue();
+            this.startAngle(ui.Angle.deg(azimuth - sweep / 2 - viewContext.mapHeading))
+                .sweepAngle(ui.Angle.deg(sweep))
+                .innerRadius(6 + 6 * index)
+                .outerRadius(6 + 6 * index + 4);
+        };
+        SectorMapView.prototype.onClick = function (event) {
+            event.stopPropagation();
+            var popoverView = this._popoverView;
+            if (popoverView === null) {
+                popoverView = new SectorMapPopoverView(this._nodeRef);
+                popoverView.setSource(this);
+                popoverView.hideModal();
+                popoverView.backgroundColor.didUpdate = function () {
+                    popoverView.place();
+                };
+                this._popoverView = popoverView;
+            }
+            popoverView.backgroundColor(this.fill.value.darker(2).alpha(0.9));
+            this.rootView.toggleModal(popoverView, { multi: event.altKey });
+        };
+        return SectorMapView;
+    }(map.MapArcView));
+
     var INFO_COLOR = ui.Color.parse("#44d7b6");
     var WARN_COLOR = ui.Color.parse("#f9f070");
     var ALERT_COLOR = ui.Color.parse("#f6511d");
     var WARN_INTERPOLATOR = ui.ColorInterpolator.between(INFO_COLOR, WARN_COLOR);
     var ALERT_INTERPOLATOR = ui.ColorInterpolator.between(WARN_COLOR, ALERT_COLOR);
-    var STATUS_TWEEN = ui.Transition.duration(500, ui.Ease.cubicOut);
+    var STATUS_TWEEN$1 = ui.Transition.duration(500, ui.Ease.cubicOut);
+    var MIN_SECTOR_ZOOM = 10;
     var SiteMapView = (function (_super) {
         __extends(SiteMapView, _super);
         function SiteMapView(nodeRef) {
             var _this = _super.call(this) || this;
             _this.onClick = _this.onClick.bind(_this);
-            _this.fill._inherit = null;
-            _this.stroke._inherit = null;
-            _this.strokeWidth._inherit = null;
             _this._nodeRef = nodeRef;
+            _this._sectorsLink = null;
             _this._statusColor = INFO_COLOR;
             _this._popoverView = null;
             return _this;
         }
         SiteMapView.prototype.didSetStatus = function (newStatus, tween) {
-            if (tween === void 0) { tween = STATUS_TWEEN; }
+            if (tween === void 0) { tween = STATUS_TWEEN$1; }
+            var marker = this.getChildView("marker");
+            if (marker === null) {
+                var coordinates = newStatus.get("coordinates").toAny();
+                marker = new map.MapCircleView().geoCenter(coordinates).radius(4);
+                this.setChildView("marker", marker);
+            }
             var color;
             var severity = newStatus.get("severity").numberValue(0);
             if (severity > 1) {
@@ -4902,8 +5122,9 @@
         SiteMapView.prototype.ripple = function (color, width, duration) {
             var rootMapView = this.rootMapView;
             if (!this.isHidden() && !this.isCulled() && !document.hidden && this.geoBounds.intersects(rootMapView.geoFrame)) {
+                var marker = this.getChildView("marker");
                 var ripple_1 = new map.MapCircleView()
-                    .geoCenter(this.geoCenter.value)
+                    .geoCenter(marker.geoCenter.value)
                     .radius(0)
                     .stroke(color)
                     .strokeWidth(width);
@@ -4914,29 +5135,6 @@
                 ripple_1.stroke(color.alpha(0), tween)
                     .radius(radius, tween.onEnd(function () { ripple_1.remove(); }));
             }
-        };
-        SiteMapView.prototype.onMount = function () {
-            _super.prototype.onMount.call(this);
-            this.on("click", this.onClick);
-        };
-        SiteMapView.prototype.onUnmount = function () {
-            this.off("click", this.onClick);
-            _super.prototype.onUnmount.call(this);
-        };
-        SiteMapView.prototype.onClick = function (event) {
-            event.stopPropagation();
-            var popoverView = this._popoverView;
-            if (popoverView === null) {
-                popoverView = new SiteMapPopoverView(this._nodeRef);
-                popoverView.setSource(this);
-                popoverView.hideModal();
-                popoverView.backgroundColor.didUpdate = function () {
-                    popoverView.place();
-                };
-                this._popoverView = popoverView;
-            }
-            popoverView.backgroundColor(this._statusColor.darker(2).alpha(0.9));
-            this.rootView.toggleModal(popoverView, { multi: event.altKey });
         };
         Object.defineProperty(SiteMapView.prototype, "rootMapView", {
             get: function () {
@@ -4954,15 +5152,127 @@
             enumerable: false,
             configurable: true
         });
+        SiteMapView.prototype.didUpdateSector = function (key, newSectorStatus) {
+            var sectorNodeUri = key.stringValue();
+            var azimuth = newSectorStatus.get("azimuth").stringValue();
+            var azimuthView = this.getChildView(azimuth);
+            if (azimuthView === null) {
+                azimuthView = new map.MapGroupView();
+                this.setChildView(azimuth, azimuthView);
+            }
+            var sectorMapView = azimuthView.getChildView(sectorNodeUri);
+            if (sectorMapView === null) {
+                var marker = this.getChildView("marker");
+                var sectorNodeRef = this._nodeRef.nodeRef(sectorNodeUri);
+                sectorMapView = new SectorMapView(sectorNodeRef)
+                    .geoCenter(marker.geoCenter.value);
+                sectorMapView.didSetStatus(newSectorStatus, false);
+                azimuthView.setChildView(sectorNodeUri, sectorMapView);
+            }
+            else {
+                sectorMapView.didSetStatus(newSectorStatus);
+            }
+        };
+        SiteMapView.prototype.didRemoveSector = function (key, oldSectorStatus) {
+            var sectorNodeUri = key.stringValue();
+            var azimuth = oldSectorStatus.get("azimuth").stringValue();
+            var azimuthView = this.getChildView(azimuth);
+            if (azimuthView !== null) {
+                azimuthView.removeChildView(sectorNodeUri);
+                if (azimuthView.childViews.length === 0) {
+                    this.removeChildView(azimuthView);
+                }
+            }
+        };
+        SiteMapView.prototype.onMount = function () {
+            _super.prototype.onMount.call(this);
+        };
+        SiteMapView.prototype.onUnmount = function () {
+            _super.prototype.onUnmount.call(this);
+            this.unlinkSectors();
+        };
+        SiteMapView.prototype.onInsertChildView = function (childView, targetView) {
+            _super.prototype.onInsertChildView.call(this, childView, targetView);
+            if (childView.key === "marker") {
+                childView.on("click", this.onClick);
+            }
+        };
+        SiteMapView.prototype.onRemoveChildView = function (childView) {
+            _super.prototype.onRemoveChildView.call(this, childView);
+            if (childView.key === "marker") {
+                childView.off("click", this.onClick);
+            }
+        };
+        SiteMapView.prototype.didProject = function (viewContext) {
+            if (viewContext.mapZoom >= MIN_SECTOR_ZOOM && this.geoBounds.intersects(viewContext.geoFrame)) {
+                this.linkSectors();
+            }
+            else {
+                if (this._sectorsLink !== null) {
+                    this.rootView.dismissModals();
+                }
+                this.unlinkSectors();
+            }
+            _super.prototype.didProject.call(this, viewContext);
+        };
+        SiteMapView.prototype.onClick = function (event) {
+            event.stopPropagation();
+            var popoverView = this._popoverView;
+            if (popoverView === null) {
+                popoverView = new SiteMapPopoverView(this._nodeRef);
+                popoverView.setSource(this.getChildView("marker"));
+                popoverView.hideModal();
+                popoverView.backgroundColor.didUpdate = function () {
+                    popoverView.place();
+                };
+                this._popoverView = popoverView;
+            }
+            popoverView.backgroundColor(this._statusColor.darker(2).alpha(0.9));
+            this.rootView.toggleModal(popoverView, { multi: event.altKey });
+        };
+        SiteMapView.prototype.linkSectors = function () {
+            if (this._sectorsLink === null) {
+                this._sectorsLink = this._nodeRef.downlinkMap()
+                    .laneUri("sectors")
+                    .didUpdate(this.didUpdateSector.bind(this))
+                    .didRemove(this.didRemoveSector.bind(this))
+                    .open();
+            }
+        };
+        SiteMapView.prototype.unlinkSectors = function () {
+            if (this._sectorsLink !== null) {
+                this._sectorsLink.close();
+                this._sectorsLink = null;
+                var i = 0;
+                while (i < this._childViews.length) {
+                    var childView = this._childViews[i];
+                    if (childView instanceof map.MapGroupView) {
+                        childView.remove();
+                    }
+                    else {
+                        i += 1;
+                    }
+                }
+            }
+        };
+        __decorate([
+            ui.MemberAnimator(ui.Color)
+        ], SiteMapView.prototype, "fill", void 0);
+        __decorate([
+            ui.MemberAnimator(ui.Color)
+        ], SiteMapView.prototype, "stroke", void 0);
+        __decorate([
+            ui.MemberAnimator(Number)
+        ], SiteMapView.prototype, "strokeWidth", void 0);
         return SiteMapView;
-    }(map.MapCircleView));
+    }(map.MapGroupView));
 
     var INFO_COLOR$1 = ui.Color.parse("#44d7b6");
     var WARN_COLOR$1 = ui.Color.parse("#f9f070");
     var ALERT_COLOR$1 = ui.Color.parse("#f6511d");
     var WARN_INTERPOLATOR$1 = ui.ColorInterpolator.between(INFO_COLOR$1, WARN_COLOR$1);
     var ALERT_INTERPOLATOR$1 = ui.ColorInterpolator.between(WARN_COLOR$1, ALERT_COLOR$1);
-    var STATUS_TWEEN$1 = ui.Transition.duration(5000, ui.Ease.cubicOut);
+    var STATUS_TWEEN$2 = ui.Transition.duration(5000, ui.Ease.cubicOut);
     var RegionMapView = (function (_super) {
         __extends(RegionMapView, _super);
         function RegionMapView(nodeRef) {
@@ -4985,7 +5295,7 @@
             return _this;
         }
         RegionMapView.prototype.didSetStatus = function (newStatus, tween) {
-            if (tween === void 0) { tween = STATUS_TWEEN$1; }
+            if (tween === void 0) { tween = STATUS_TWEEN$2; }
             var siteCount = newStatus.get("siteCount").numberValue(0);
             var warnCount = newStatus.get("warnCount").numberValue(0);
             var alertCount = newStatus.get("alertCount").numberValue(0);
@@ -5090,11 +5400,7 @@
             var siteMapView = this.getChildView(siteNodeUri);
             if (siteMapView === null) {
                 var siteNodeRef = this._nodeRef.nodeRef(siteNodeUri);
-                var coordinates = newSiteStatus.get("coordinates").toAny();
-                siteMapView = new SiteMapView(siteNodeRef)
-                    .geoCenter(coordinates)
-                    .radius(4)
-                    .fill(this.fill.value.alpha(1));
+                siteMapView = new SiteMapView(siteNodeRef);
                 siteMapView.didSetStatus(newSiteStatus, false);
                 this.setChildView(siteNodeUri, siteMapView);
             }
@@ -5260,6 +5566,8 @@
 
     exports.RegionMapPopoverView = RegionMapPopoverView;
     exports.RegionMapView = RegionMapView;
+    exports.SectorMapPopoverView = SectorMapPopoverView;
+    exports.SectorMapView = SectorMapView;
     exports.SiteMapPopoverView = SiteMapPopoverView;
     exports.SiteMapView = SiteMapView;
 
