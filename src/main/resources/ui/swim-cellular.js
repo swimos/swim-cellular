@@ -4739,9 +4739,9 @@
                 var key = item.key.stringValue(void 0);
                 var value = item.numberValue(void 0);
                 if (key !== void 0 && key !== "recorded_time" && value !== void 0) {
-                    var plot = this._historyChart.getChildView(key);
-                    if (plot === null) {
-                        plot = new gauge.LineGraphView()
+                    var historyPlot = this._historyChart.getChildView(key);
+                    if (historyPlot === null) {
+                        historyPlot = new gauge.LineGraphView()
                             .hitMode("data")
                             .stroke("#ffffff")
                             .strokeWidth(2)
@@ -4756,9 +4756,25 @@
                             var datum = event.targetView;
                             datum.label(null);
                         });
-                        this._historyChart.setChildView(key, plot);
+                        this._historyChart.setChildView(key, historyPlot);
                     }
-                    plot.insertDatum({ x: t, y: value });
+                    historyPlot.insertDatum({ x: t, y: value });
+                    var futureKey = key + "-future";
+                    var futurePlot = this._historyChart.getChildView(futureKey);
+                    if (futurePlot === null) {
+                        futurePlot = new gauge.LineGraphView()
+                            .hitMode("data")
+                            .stroke("#ffffff")
+                            .strokeWidth(2);
+                        this._historyChart.setChildView(futureKey, futurePlot);
+                    }
+                    futurePlot.removeAll();
+                    var prevDatum = historyPlot._data.previousValue(t);
+                    if (prevDatum !== void 0) {
+                        futurePlot.insertDatum({ x: t, y: value, opacity: 1 });
+                        var nextValue = (prevDatum.y.value + value) / 2;
+                        futurePlot.insertDatum({ x: new core.DateTime(t.time() + 60000), y: nextValue, opacity: 0 });
+                    }
                 }
             }, this);
         };
@@ -4768,9 +4784,9 @@
                 var key = item.key.stringValue(void 0);
                 var value = item.numberValue(void 0);
                 if (key !== void 0 && key !== "recorded_time" && value !== void 0) {
-                    var plot = this._historyChart.getChildView(key);
-                    if (plot !== null) {
-                        plot.removeDatum(t);
+                    var historyPlot = this._historyChart.getChildView(key);
+                    if (historyPlot !== null) {
+                        historyPlot.removeDatum(t);
                     }
                 }
             }, this);

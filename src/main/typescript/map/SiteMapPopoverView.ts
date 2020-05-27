@@ -222,9 +222,9 @@ export class SiteMapPopoverView extends PopoverView {
       const key = item.key.stringValue(void 0);
       const value = item.numberValue(void 0);
       if (key !== void 0 && key !== "recorded_time" && value !== void 0) {
-        let plot = this._historyChart.getChildView(key) as LineGraphView<DateTime, number> | null;
-        if (plot === null) {
-          plot = new LineGraphView<DateTime, number>()
+        let historyPlot = this._historyChart.getChildView(key) as LineGraphView<DateTime, number> | null;
+        if (historyPlot === null) {
+          historyPlot = new LineGraphView<DateTime, number>()
               .hitMode("data")
               .stroke("#ffffff")
               .strokeWidth(2)
@@ -239,9 +239,26 @@ export class SiteMapPopoverView extends PopoverView {
                 const datum = event.targetView as DatumView<DateTime, number>;
                 datum.label(null);
               });
-          this._historyChart.setChildView(key, plot);
+          this._historyChart.setChildView(key, historyPlot);
         }
-        plot.insertDatum({x: t, y: value});
+        historyPlot.insertDatum({x: t, y: value});
+
+        const futureKey = key + "-future";
+        let futurePlot = this._historyChart.getChildView(futureKey) as LineGraphView<DateTime, number> | null;
+        if (futurePlot === null) {
+          futurePlot = new LineGraphView<DateTime, number>()
+              .hitMode("data")
+              .stroke("#ffffff")
+              .strokeWidth(2);
+          this._historyChart.setChildView(futureKey, futurePlot);
+        }
+        futurePlot.removeAll();
+        const prevDatum = historyPlot._data.previousValue(t);
+        if (prevDatum !== void 0) {
+          futurePlot.insertDatum({x: t, y: value, opacity: 1});
+          const nextValue = (prevDatum.y.value! + value) / 2;
+          futurePlot.insertDatum({x: new DateTime(t.time() + 60000), y: nextValue, opacity: 0});
+        }
       }
     }, this);
   }
@@ -253,9 +270,9 @@ export class SiteMapPopoverView extends PopoverView {
       const key = item.key.stringValue(void 0);
       const value = item.numberValue(void 0);
       if (key !== void 0 && key !== "recorded_time" && value !== void 0) {
-        let plot = this._historyChart.getChildView(key) as LineGraphView<DateTime, number> | null;
-        if (plot !== null) {
-          plot.removeDatum(t);
+        let historyPlot = this._historyChart.getChildView(key) as LineGraphView<DateTime, number> | null;
+        if (historyPlot !== null) {
+          historyPlot.removeDatum(t);
         }
       }
     }, this);
