@@ -2,8 +2,17 @@ package swim.cellular.agent;
 
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
+import swim.api.http.HttpLane;
 import swim.api.lane.MapLane;
 import swim.api.lane.ValueLane;
+import swim.codec.Output;
+import swim.http.HttpChunked;
+import swim.http.HttpEntity;
+import swim.http.HttpRequest;
+import swim.http.HttpResponse;
+import swim.http.HttpStatus;
+import swim.http.MediaType;
+import swim.json.Json;
 import swim.structure.Value;
 
 /**
@@ -47,6 +56,24 @@ public class ENodeBAgent extends AbstractAgent {
   @SwimLane("trueCallHistory")
   MapLane<Long, Value> trueCallHistory = this.<Long, Value>mapLane()
       .didUpdate(this::didUpdateTrueCallHistory);
+
+  @SwimLane("summary")
+  HttpLane<Value> summary = this.<Value>httpLane()
+      .doRespond(this::onRequestSummary);
+
+  /**
+   * REST endpoint that exposes ENodeB summary information.
+   */
+  HttpResponse<?> onRequestSummary(HttpRequest<Value> request) {
+    // Compute the repsonse payload.
+    final Value payload = this.status.get().concat(this.kpis.get());
+    // Construct the response entity by incrementally serializing and encoding
+    // the response payload as JSON.
+    final HttpEntity<?> entity = HttpChunked.from(Json.write(payload, Output.full()),
+                                                  MediaType.applicationJson());
+    // Return the HTTP response.
+    return HttpResponse.from(HttpStatus.OK).content(entity);
+  }
 
   /**
    * Invoked when new TrueCall data is received.
