@@ -1,4 +1,5 @@
 @kernel(class: "swim.store.db.DbStoreKernel", optional: true)
+@kernel(class: "swim.cluster.ClusterKernel", optional: true)
 @kernel(class: "swim.meta.MetaKernel")
 @kernel(class: "swim.cellular.CellularUiRouter")
 
@@ -37,6 +38,14 @@ cellular: @fabric {
       #}
       @host {
         uri: "warp://localhost:9009"
+        primary: true
+      }
+    }
+    @part {
+      key:
+      predicate:
+      gateway: true
+      @host {
         primary: true
       }
     }
