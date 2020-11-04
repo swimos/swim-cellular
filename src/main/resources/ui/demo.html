@@ -52,14 +52,7 @@ mapView.overlayCanvas();
 
 const baseUri = swim.Uri.parse(document.location.href);
 const hostParam = baseUri.query().get("host");
-let hostUri;
-if (hostParam) {
-  hostUri = swim.Uri.parse(hostParam);
-} else if (baseUri.host().toString()) {
-  hostUri = baseUri.base().schemeName(baseUri.schemeName() === "https" ? "warps" : "warp");
-} else {
-  hostUri = swim.Uri.parse("warp://localhost:9001");
-}
+const hostUri = "warps://cellular.swim.services";
 
 const hostRef = swim.client.hostRef(hostUri);
 const rootNodeRef = hostRef.nodeRef("/country/US");
