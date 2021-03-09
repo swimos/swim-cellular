@@ -18,12 +18,12 @@ public class ENodeBConnectorAgent extends AbstractAgent {
   private ValueDownlink<Value> statusDownlink;
 
   /**
-   * A downlink to the trueCallLatest lane of the EnodeBAgent (whose uri is the
+   * A downlink to the ranLatest lane of the EnodeBAgent (whose uri is the
    * same as this agent) hosted on cellular.swim.services. The downlink updates
-   * whenever the trueCallLatest lane of the EnodeBAgenthosted on
+   * whenever the ranLatest lane of the EnodeBAgent hosted on
    * cellular.swim.services is updated
    */
-  private ValueDownlink<Value> trueCallLatestDownlink;
+  private ValueDownlink<Value> ranLatestDownlink;
 
   /**
    * Cell site status lane updated by the downlink to the status lane
@@ -35,13 +35,13 @@ public class ENodeBConnectorAgent extends AbstractAgent {
   ValueLane<Value> status;
 
   /**
-   * Latest trueCall data for a cell site updated by the downlink to the
-   * trueCallLatest lane of the EnodeBAgent hosted on cellular.swim.services,
+   * Latest RAN data for a cell site updated by the downlink to the
+   * ranLatest lane of the EnodeBAgent hosted on cellular.swim.services,
    * shared with the cell site and eNodeB agents running in the same Swim Node
    * as this connector agent.
    */
-  @SwimLane("trueCallLatest")
-  ValueLane<Value> trueCallLatest;
+  @SwimLane("ranLatest")
+  ValueLane<Value> ranLatest;
 
   /**
    * Invoked when new new status data is received from the remote agent
@@ -51,10 +51,10 @@ public class ENodeBConnectorAgent extends AbstractAgent {
   }
 
   /**
-   * Invoked when new new trueCall sample data is received from the remote agent
+   * Invoked when new new ran sample data is received from the remote agent
    */
-  private void didUpdateTrueCallLatest(Value newSample, Value oldSample) {
-    this.trueCallLatest.set(newSample);
+  private void didUpdateRanLatest(Value newSample, Value oldSample) {
+    this.ranLatest.set(newSample);
   }
 
   /**
@@ -72,13 +72,13 @@ public class ENodeBConnectorAgent extends AbstractAgent {
         .open()
         .didSet(this::didUpdateStatus);
 
-    // Instantiate the trueCallLatestDownlink
-    trueCallLatestDownlink = downlinkValue()
+    // Instantiate the ranLatestDownlink
+    ranLatestDownlink = downlinkValue()
         .hostUri(REMOTE_HOST_URI)
         .nodeUri(nodeUri()) // convenience method to get the current agent's URI
-        .laneUri("trueCallLatest")
+        .laneUri("ranLatest")
         .open()
-        .didSet(this::didUpdateTrueCallLatest);
+        .didSet(this::didUpdateRanLatest);
   }
 
   /**
@@ -91,9 +91,9 @@ public class ENodeBConnectorAgent extends AbstractAgent {
       statusDownlink.close();
     }
 
-    // close the trueCallLatestDownlink
-    if (trueCallLatest != null) {
-      trueCallLatest.close();
+    // close the ranLatestDownlink
+    if (ranLatest != null) {
+      ranLatest.close();
     }
   }
 

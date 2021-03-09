@@ -37,25 +37,25 @@ public class ENodeBAgent extends AbstractAgent {
   ValueLane<Value> status;
 
   /**
-   * Computed kpis from TrueCall data for this cell site.
+   * Computed kpis from RAN data for this cell site.
    */
   @SwimLane("kpis")
   ValueLane<Value> kpis;
 
   /**
-   * Latest TrueCall data for this cell site, updated by a simulator or other
+   * Latest RAN data for this cell site, updated by a simulator or other
    * driver agent running in the same Swim Node as this eNodeB agent.
    */
-  @SwimLane("trueCallLatest")
-  ValueLane<Value> trueCallLatest = this.<Value>valueLane()
-      .didSet(this::didSetTrueCallLatest);
+  @SwimLane("ranLatest")
+  ValueLane<Value> ranLatest = this.<Value>valueLane()
+      .didSet(this::didSetRanLatest);
 
   /**
-   * Rolling time series of historical TrueCall samples.
+   * Rolling time series of historical ran samples.
    */
-  @SwimLane("trueCallHistory")
-  MapLane<Long, Value> trueCallHistory = this.<Long, Value>mapLane()
-      .didUpdate(this::didUpdateTrueCallHistory);
+  @SwimLane("ranHistory")
+  MapLane<Long, Value> ranHistory = this.<Long, Value>mapLane()
+      .didUpdate(this::didUpdateRanHistory);
 
   @SwimLane("summary")
   HttpLane<Value> summary = this.<Value>httpLane()
@@ -76,35 +76,35 @@ public class ENodeBAgent extends AbstractAgent {
   }
 
   /**
-   * Invoked when new TrueCall data is received.
+   * Invoked when new ran data is received.
    */
-  void didSetTrueCallLatest(Value newSample, Value oldSample) {
-    // Extract the recorded timestamp from the TrueCall sample.
+  void didSetRanLatest(Value newSample, Value oldSample) {
+    // Extract the recorded timestamp from the RAN sample.
     final long timestamp = newSample.get("recorded_time").longValue();
-    // Record this sample in the TrueCall history lane.
-    this.trueCallHistory.put(timestamp, newSample);
-    // Update TrueCall KPIs to account foe the newly received sample.
+    // Record this sample in the RAN history lane.
+    this.ranHistory.put(timestamp, newSample);
+    // Update RAN KPIs to account for the newly received sample.
     updateKpis(newSample);
   }
 
   /**
-   * Invoked when a new sample is added to the TrueCall history lane.
+   * Invoked when a new sample is added to the RAN history lane.
    */
-  void didUpdateTrueCallHistory(Long timestamp, Value newSample, Value oldSample) {
-    // Check if the size of the TrueCall history lane exceeds 10 samples,
+  void didUpdateRanHistory(Long timestamp, Value newSample, Value oldSample) {
+    // Check if the size of the RAN history lane exceeds 10 samples,
     // and drop the oldest excess samples.
-    final int dropCount = this.trueCallHistory.size() - 10;
+    final int dropCount = this.ranHistory.size() - 10;
     if (dropCount > 0) {
-      this.trueCallHistory.drop(dropCount);
+      this.ranHistory.drop(dropCount);
     }
   }
 
   /**
-   * Updates TrueCall KPIs with a newly received TrueCall sample.
+   * Updates RAN KPIs with a newly received RAN sample.
    */
   void updateKpis(Value newSample) {
     final Value oldKpis = this.kpis.get();
-    // Get the previous number of TrueCall samples received, initializing to 0.
+    // Get the previous number of RAN samples received, initializing to 0.
     final int oldCount = oldKpis.get("count").intValue(0);
 
     // Compute running avergae of mean ul sinr;

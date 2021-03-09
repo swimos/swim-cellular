@@ -4854,7 +4854,7 @@
         SiteMapPopoverView.prototype.linkHistory = function () {
             if (this._historyLink === null) {
                 this._historyLink = this._nodeRef.downlinkMap()
-                    .laneUri("trueCallHistory")
+                    .laneUri("ranHistory")
                     .didUpdate(this.didUpdateHistory.bind(this))
                     .didRemove(this.didRemoveHistory.bind(this))
                     .open();

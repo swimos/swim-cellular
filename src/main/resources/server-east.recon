@@ -1,0 +1,277 @@
+@kernel(class: "swim.store.db.DbStoreKernel", optional: true)
+@kernel(class: "swim.meta.MetaKernel")
+@kernel(class: "swim.cellular.CellularUiRouter")
+
+@web(port: 9001) {
+  space: "cellular"
+  @websocket {
+    serverCompressionLevel: 0# -1 = default; 0 = off; 1-9 = deflate level
+    clientCompressionLevel: 0# -1 = default; 0 = off; 1-9 = deflate level
+  }
+}
+
+cellular: @fabric {
+  @plane(class: "swim.cellular.CellularPlane")
+
+  @node {
+    pattern: "/site/:id"
+    @agent(class: "swim.cellular.agent.SiteAgent")
+  }
+  @node {
+    pattern: "/site/:id/sector/:sid"
+    @agent(class: "swim.cellular.agent.SectorAgent")
+  }
+  @node {
+    uri: "/country/US/state/AL"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/AL.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/AL-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/CT"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/CT.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/CT-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/DE"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/DE.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/DE-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/FL"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/FL.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/FL-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/GA"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/GA.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/GA-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/IL"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/IL.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/IL-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/IN"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/IN.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/IN-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/KY"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/KY.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/KY-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/ME"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/ME.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/ME-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/MD"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/MD.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/MD-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/MA"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/MA.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/MA-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/MI"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/MI.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/MI-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/MS"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/MS.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/MS-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/NH"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/NH.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/NH-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/NJ"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/NJ.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/NJ-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/NY"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/NY.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/NY-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/NC"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/NC.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/NC-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/OH"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/OH.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/OH-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/PA"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/PA.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/PA-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/RI"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/RI.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/RI-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/SC"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/SC.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/SC-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/TN"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/TN.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/TN-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/VT"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/VT.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/VT-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/VA"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/VA.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/VA-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/WV"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/WV.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/WV-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/state/WI"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/state/WI.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/state/WI-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US/territory/DC"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US/territory/DC.recon"
+    }
+    @agent(class: "swim.cellular.agent.RanAgent") {
+      seed: "seed/country/US/territory/DC-ran.recon"
+    }
+  }
+  @node {
+    uri: "/country/US"
+    @agent(class: "swim.cellular.agent.RegionAgent") {
+      seed: "seed/country/US.recon"
+    }
+  }
+
+  #@store {
+  #  path: "/tmp/swim-cellular/"
+  #}
+}

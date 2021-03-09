@@ -2,10 +2,8 @@ package swim.cellular.agent;
 
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
-import swim.api.lane.MapLane;
 import swim.api.lane.ValueLane;
 import swim.concurrent.TimerRef;
-import swim.observable.function.DidUpdateKey;
 import swim.structure.Record;
 import swim.structure.Value;
 
@@ -28,12 +26,12 @@ public class ENodeBSimAgent extends AbstractAgent {
   ValueLane<Value> status;
 
   /**
-   * Latest trueCall data for a cell site updated by the simulation, shared
+   * Latest RAN data for a cell site updated by the simulation, shared
    * with the cell site and eNodeB agents running in the same Swim Node as
    * this sim agent.
    */
-  @SwimLane("trueCallLatest")
-  ValueLane<Value> trueCallLatest;
+  @SwimLane("ranLatest")
+  ValueLane<Value> ranLatest;
 
   /**
    * Runs a single step of the eNodeB simulation.
@@ -65,14 +63,14 @@ public class ENodeBSimAgent extends AbstractAgent {
     // Generate a random rrc re-establishment failure count between 1 and 9.
     final long rrcReestablishmentFailures = (long) (1 + Math.random() * 9);
 
-    // Update this eNodeB's trueCallLatest lane with the simulated data.
-    final Value oldTrueCallLatest = this.trueCallLatest.get();
-    final Value newTrueCallLatest = oldTrueCallLatest
+    // Update this eNodeB's ranLatest lane with the simulated data.
+    final Value oldRanLatest = this.ranLatest.get();
+    final Value newRanLatest = oldRanLatest
         .updated("mean_ul_sinr", meanUlSinr)
         .updated("rrc_re_establishment_failures", rrcReestablishmentFailures)
         .updated("recorded_time", System.currentTimeMillis());
-    this.trueCallLatest.set(newTrueCallLatest);
-    trace(Record.of("simulated true call sample", newTrueCallLatest));
+    this.ranLatest.set(newRanLatest);
+    trace(Record.of("simulated RAN sample", newRanLatest));
   }
 
   /**
