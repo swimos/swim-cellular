@@ -32,8 +32,6 @@ ext.moduleArgs = ['--add-modules', 'swim.meta']
 
 repositories {
   mavenCentral()
-  jcenter()
-  maven { url 'https://swimos.bintray.com/maven' }
 }
 
 dependencies {
@@ -45,8 +43,8 @@ dependencies {
 afterEvaluate {
   configurations {
     apiElements {
-      sourceCompatibility = JavaVersion.VERSION_1_8
-      targetCompatibility = JavaVersion.VERSION_1_8
+      sourceCompatibility = JavaVersion.VERSION_1_9
+      targetCompatibility = JavaVersion.VERSION_1_9
     }
   }
 
@@ -78,8 +76,8 @@ afterEvaluate {
   compileJava {
     options.compilerArgs += compilerArgs
     options.encoding = 'UTF-8'
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_9
+    targetCompatibility = JavaVersion.VERSION_1_9
     exclude '*module-info*'
   }
 
