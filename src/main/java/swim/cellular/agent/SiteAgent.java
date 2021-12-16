@@ -4,6 +4,7 @@ import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
 import swim.api.lane.JoinValueLane;
 import swim.api.lane.ValueLane;
+import swim.cellular.map.SphericalMercator;
 import swim.structure.Record;
 import swim.structure.Slot;
 import swim.structure.Value;
@@ -16,11 +17,15 @@ import swim.uri.UriPath;
  */
 public class SiteAgent extends AbstractAgent {
 
+  private static final Uri MAP_ADD_SITE_LANE_URI = Uri.parse("addSite");
+  private static final int MAX_ZOOM = 16;
+
   @SwimLane("info")
   ValueLane<Value> info;
 
   @SwimLane("status")
-  ValueLane<Value> status;
+  ValueLane<Value> status = this.<Value>valueLane()
+          .didSet((newValue, oldValue) -> updateMapTile(newValue));
 
   /**
    * Streaming aggregation of the live status of cell sectors associated with
@@ -87,6 +92,23 @@ public class SiteAgent extends AbstractAgent {
             .open();
 
         sectorId += 1;
+      }
+    }
+  }
+
+  private void updateMapTile(Value status) {
+    final Value coordinates = status.get("coordinates");
+    if (coordinates.isDefined()) {
+      final double lng = coordinates.getItem(0).doubleValue(Long.MIN_VALUE);
+      final double lat = coordinates.getItem(1).doubleValue(Long.MIN_VALUE);
+      if(lat != Long.MIN_VALUE && lng != Long.MIN_VALUE) {
+        final double x = SphericalMercator.projectLng(lng);
+        final double y = SphericalMercator.projectLat(lat);
+        final int tileX = (int) (x * (double) (1 << MAX_ZOOM));
+        final int tileY = (int) (y * (double) (1 << MAX_ZOOM));
+        final int tileZ = MAX_ZOOM;
+        final Uri tileUri = Uri.from(UriPath.from("/", "map", "/", tileX + "," + tileY + "," + tileZ));
+        command(tileUri, MAP_ADD_SITE_LANE_URI, status.updated("uri", Uri.form().mold(nodeUri()).toValue()));
       }
     }
   }
