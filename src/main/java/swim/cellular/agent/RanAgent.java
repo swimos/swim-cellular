@@ -1,7 +1,5 @@
 package swim.cellular.agent;
 
-import java.util.Iterator;
-
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
 import swim.api.lane.JoinValueLane;
@@ -13,6 +11,8 @@ import swim.structure.Record;
 import swim.structure.Slot;
 import swim.structure.Value;
 import swim.uri.Uri;
+
+import java.util.Iterator;
 
 /**
  * A Web Agent that represents a Radio Access Network, and acts as a container
@@ -64,9 +64,9 @@ public class RanAgent extends AbstractAgent {
     }
 
     // Throttle analysis updates to 1Hz.
-    if (System.currentTimeMillis() - this.lastAnalyzeTime > 1000L) {
+    //if (System.currentTimeMillis() - this.lastAnalyzeTime > 1000L) {
       analyzeRanStatus();
-    }
+    //}
   }
 
   /**

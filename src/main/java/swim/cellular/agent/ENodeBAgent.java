@@ -3,6 +3,7 @@ package swim.cellular.agent;
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
 import swim.api.http.HttpLane;
+import swim.api.lane.CommandLane;
 import swim.api.lane.MapLane;
 import swim.api.lane.ValueLane;
 import swim.codec.Output;
@@ -50,6 +51,22 @@ public class ENodeBAgent extends AbstractAgent {
   ValueLane<Value> ranLatest = this.<Value>valueLane()
       .didSet(this::didSetRanLatest);
 
+  @SwimLane("publish")
+  public final CommandLane<Value> publish = this.<Value>commandLane()
+      .onCommand(v -> {
+        //info(nodeUri() + "publish " + Recon.toString(v));
+        final Value oldStatus = this.status.get();
+        final Value newStatus = oldStatus.updated("severity", v.get("severity").doubleValue(0.0d));
+        this.status.set(newStatus);
+
+        final Value oldRanLatest = this.ranLatest.get();
+        final Value newRanLatest = oldRanLatest
+            .updated("mean_ul_sinr", v.get("mean_ul_sinr").intValue(0))
+            .updated("rrc_re_establishment_failures",v.get("rrc_re_establishment_failures").intValue(0))
+            .updated("recorded_time", System.currentTimeMillis());
+        this.ranLatest.set(newRanLatest);
+      });
+
   /**
    * Rolling time series of historical ran samples.
    */
@@ -69,10 +86,10 @@ public class ENodeBAgent extends AbstractAgent {
     final Value payload = this.status.get().concat(this.kpis.get());
     // Construct the response entity by incrementally serializing and encoding
     // the response payload as JSON.
-    final HttpEntity<?> entity = HttpChunked.from(Json.write(payload, Output.full()),
+    final HttpEntity<?> entity = HttpChunked.create(Json.write(payload, Output.full()),
                                                   MediaType.applicationJson());
     // Return the HTTP response.
-    return HttpResponse.from(HttpStatus.OK).content(entity);
+    return HttpResponse.create(HttpStatus.OK).content(entity);
   }
 
   /**
@@ -120,6 +137,7 @@ public class ENodeBAgent extends AbstractAgent {
 
     // Update the kpis lane with the computed values.
     final Value newKpis = oldKpis
+        .updated("severity", this.status.get().get("severity").doubleValue(0.0))
         .updated("avg_mean_ul_sinr", Math.round(newAvgMeanUlSinr))
         .updated("sum_rrc_re_establishment_failures", newSumRrcReEstablishmentFailures)
         .updated("count", oldCount + 1);

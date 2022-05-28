@@ -42,7 +42,7 @@ public class SiteAgent extends AbstractAgent {
     openAgent("eNodeB", ENodeBAgent.class);
 
     // Launch an eNodeB simulator in the same Swim Node as this agent.
-    openAgent("eNodeBSim", ENodeBSimAgent.class);
+    //openAgent("eNodeBSim", ENodeBSimAgent.class);
 
     // Launch an eNodeB connector in the same Swim Node as this agent.
     //openAgent("eNodeBConnector", ENodeBConnectorAgent.class);
@@ -70,7 +70,7 @@ public class SiteAgent extends AbstractAgent {
       final int sectorAzimuth = baseAngle + 2 * sectorSweep * i;
 
       for (int j = 0; j < carrierCount; j += 1) {
-        final Uri nodeUri = Uri.from(sitePath.appended("sector", String.valueOf(sectorId)));
+        final Uri nodeUri = Uri.create(sitePath.appended("sector", String.valueOf(sectorId)));
         final Value key = Uri.form().mold(nodeUri).toValue();
         final Uri laneUri = Uri.parse("status");
         final String band = Character.toString('A' + (char) Math.round(26 * Math.random()));

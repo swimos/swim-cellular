@@ -1,13 +1,13 @@
 package swim.cellular;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import swim.codec.ParserException;
 import swim.codec.Utf8;
 import swim.json.Json;
 import swim.recon.Recon;
 import swim.structure.Value;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Utilities for loading and parsing configuration resources.

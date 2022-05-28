@@ -1,7 +1,10 @@
 # Swim Cellular Network Simulator
 
-A tutorial application for teaching core Swim concepts.  See a hosted version
-of this app running at [https://cellular.swim.services](https://cellular.swim.services).
+See a hosted version of this app running at [https://cellular.swim.services](https://cellular.swim.services).
+
+This is as an example of how to use Swim to connecto to a Pulsar Broker and feed the messages to Web Agents.
+- The `SitePulsarProducer` generates messages to a topic on a Pulsar broker. 
+- The `SitePulsarAgent` consumes the messages from the topic on a Pulsar broker, parses the message and sends it to the `ENodeBAgent`
 
 ## Getting Started
 
@@ -12,40 +15,35 @@ of this app running at [https://cellular.swim.services](https://cellular.swim.se
 - Ensure that your `JAVA_HOME` environment variable points to the Java installation.
 - Ensure that your `PATH` includes `$JAVA_HOME`.
 
+(Note: The pulsar configuration needs to be passed in as System properties)
 ### Running on Windows
 
+#### Application
 ```bat
-$ gradlew.bat run
+$ gradlew.bat -Pno-modules -Dsite.pulsar.url=pulsar+ssl://<your-broker> -Dsite.pulsar.topic=<your-topic> -Dsite.pulsar.token=<your-token> -Dsite.pulsar.subscription=<your-subscription> run
+```
+
+#### Pulsar Producer
+```bat
+$ gradlew.bat -Pno-modules -Dsite.pulsar.url=pulsar+ssl://<your-broker> -Dsite.pulsar.topic=<your-topic> -Dsite.pulsar.token=<your-token> runProducer
 ```
 
 ### Running on Linux or MacOS
 
+#### Application
 ```bash
-$ ./gradlew run
+$ ./gradlew -Pno-modules -Dsite.pulsar.url=pulsar+ssl://<your-broker> -Dsite.pulsar.topic=<your-topic> -Dsite.pulsar.token=<your-token> -Dsite.pulsar.subscription=<your-subscription> run
+```
+
+#### Pulsar Producer
+```bash
+$ ./gradlew -Pno-modules -Dsite.pulsar.url=pulsar+ssl://<your-broker> -Dsite.pulsar.topic=<your-topic> -Dsite.pulsar.token=<your-token> runProducer
 ```
 
 ### Viewing the UI
 
 Open a web browser to [http://localhost:9001](http://localhost:9001).
 
-### Running a local cluster
-
-Run two Swim instances on your local machine to distribute the application's
-Web Agents between two processes.
-
-```sh
-# Start the first fabric node in one terminal window
-$ ./gradlew run -Dswim.config.resource=server-a.recon
-
-# Start the second fabric node in another terminal window
-$ ./gradlew run -Dswim.config.resource=server-b.recon
-```
-
-When both processes are up and running, you can point your browser at either
-http://localhost:9008 (Server A) or http://localhost:9009 (Server B).  You
-will see a live view of all Web Agents, regardless of which server you point
-your browser at.  Swim transparently demultiplexes links opened by external
-clients, and routes them to the appropriate server in the fabric.
 
 ### Introspecting a running application
 

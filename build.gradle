@@ -32,19 +32,21 @@ ext.moduleArgs = ['--add-modules', 'swim.meta']
 
 repositories {
   mavenCentral()
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
   api group: 'org.swimos', name: 'swim-api', version: swimVersion
   implementation group: 'org.swimos', name: 'swim-server', version: swimVersion
+  implementation group: 'org.apache.pulsar', name: 'pulsar-client', version: '2.10.0'
   runtimeOnly group: 'org.swimos', name: 'swim-meta', version: swimVersion
 }
 
 afterEvaluate {
   configurations {
     apiElements {
-      sourceCompatibility = JavaVersion.VERSION_1_9
-      targetCompatibility = JavaVersion.VERSION_1_9
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
     }
   }
 
@@ -60,8 +62,8 @@ afterEvaluate {
       options.encoding = 'UTF-8'
       classpath = files()
       source = sourceSets.main.allJava
-      sourceCompatibility = JavaVersion.VERSION_1_9
-      targetCompatibility = JavaVersion.VERSION_1_9
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
       destinationDir = compileJava.destinationDir
       include '*module-info*'
     }
@@ -76,8 +78,8 @@ afterEvaluate {
   compileJava {
     options.compilerArgs += compilerArgs
     options.encoding = 'UTF-8'
-    sourceCompatibility = JavaVersion.VERSION_1_9
-    targetCompatibility = JavaVersion.VERSION_1_9
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     exclude '*module-info*'
   }
 
@@ -117,6 +119,24 @@ afterEvaluate {
         classpath = files()
       }
     }
+    systemProperties = System.getProperties()
+  }
+
+  task runProducer(type: JavaExec) {
+    group = "application"
+    if (useModules) {
+      doFirst {
+        jvmArgs += [
+          '--module-path', files(configurations.runtimeClasspath, jar.archivePath).asPath,
+        ] + moduleArgs + [
+          '--module', "${moduleName}/${mainClassName}",
+        ]
+        classpath = files()
+      }
+    } else {
+      classpath sourceSets.main.runtimeClasspath
+    }
+    mainClass = 'swim.cellular.broker.pulsar.SitePulsarProducer'
     systemProperties = System.getProperties()
   }
 

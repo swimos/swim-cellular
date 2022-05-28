@@ -17,6 +17,7 @@ public class CellularPlane extends AbstractPlane {
   public static void main(String[] args) {
     // Load the SwimOS kernel, loading its configuration from the
     // `server.recon` Java resource.
+
     final Kernel kernel = ServerLoader.loadServer();
     // Get a handle to the configured application plane.
     final PlaneContext plane = (PlaneContext) kernel.getSpace("cellular");
@@ -35,6 +36,9 @@ public class CellularPlane extends AbstractPlane {
 
     // Park the main thread while the application concurrently runs.
     kernel.run();
+
+    //startSitePulsarConsumer(null);
+
   }
 
 }
