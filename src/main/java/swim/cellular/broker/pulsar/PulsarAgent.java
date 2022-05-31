@@ -80,6 +80,9 @@ public abstract class PulsarAgent extends MessageBrokerAgent {
             }
           }
         }
+        if (isPersistent) {
+          consumer.acknowledgeAsync(msg);
+        }
         this.messageCount.incrementAndGet();
       });
     };
