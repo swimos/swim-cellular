@@ -14,14 +14,8 @@ cellular: @fabric {
   @plane(class: "swim.cellular.CellularPlane")
 
   @node {
-    pattern: "/pulsar/site"
-    @agent(class: "swim.cellular.broker.pulsar.SitePulsarAgent") {
-      config: {
-        url: "changeme"
-        topic: "changeme"
-        subscription: "site-topic"
-      }
-    }
+    pattern: "/kafka/site"
+    @agent(class: "swim.cellular.broker.kafka.SiteKafkaAgent")
   }
 
   @node {
