@@ -36,9 +36,6 @@ public class CellularPlane extends AbstractPlane {
 
     // Park the main thread while the application concurrently runs.
     kernel.run();
-
-    //startSitePulsarConsumer(null);
-
   }
 
 }
