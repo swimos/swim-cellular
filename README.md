@@ -32,12 +32,12 @@ $ gradlew.bat -Pno-modules -Dservers=<your-kafka-broker> -Dtopic=<your-topic> -D
 
 #### Application
 ```bash
-$ ./gradlew -Pno-modules -Dservers=<your-kafka-broker> -Dtopic=<your-topic> -DgroupId=<your-groupId> -DkeyClass=org.apache.kafka.common.serialization.IntegerDeserializer -DvalueClass=rg.apache.kafka.common.serialization.StringDeserializer run
+$ ./gradlew -Pno-modules -Dtopic=cellular-demo -Dkafka-config=/tmp/kafka-config.properties run
 ```
 
 #### Kafka Producer
 ```bash
-$ ./gradlew -Pno-modules -Dservers=<your-kafka-broker> -Dtopic=<your-topic> -DgroupId=<your-groupId> -DkeyClass=org.apache.kafka.common.serialization.IntegerDeserializer -DvalueClass=rg.apache.kafka.common.serialization.StringDeserializer runProducer
+$ ./gradlew -Pno-modules -Dtopic=cellular-demo -Dkafka-config=/tmp/kafka-config.properties runProducer
 ```
 
 ### Viewing the UI

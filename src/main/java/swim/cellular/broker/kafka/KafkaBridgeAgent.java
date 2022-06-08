@@ -24,6 +24,7 @@ import swim.structure.Value;
 import swim.warp.CommandMessage;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class KafkaBridgeAgent<K, V> extends MessageBrokerAgent {
@@ -38,20 +39,21 @@ public abstract class KafkaBridgeAgent<K, V> extends MessageBrokerAgent {
 
   protected void connect(Value value) {
     disconnect();
-    final KafkaConfig kafkaConfig = KafkaConfig.load();
-    this.autoCommit = kafkaConfig.isAutoCommit();
-    info(logMessage("CONNECT", kafkaConfig.toString()));
 
     try {
-      final KafkaConnector<K, V> kafkaConnector = new KafkaConnector<>(kafkaConfig);
-      this.consumer = kafkaConnector.subscribe();
+      final String kafkaConfigFile = System.getProperty("kafka-config", "kafka-config.properties");
+      final String topic = getProp("topic").stringValue("");
+
+      final KafkaConnector<K, V> kafkaConnector = new KafkaConnector<>(kafkaConfigFile);
+      this.autoCommit = kafkaConnector.isAutoCommit();
+      this.consumer = kafkaConnector.consumer();
+      this.consumer.subscribe(Collections.singleton(topic));
       poll();
     } catch (Throwable t) {
       t.printStackTrace();
       final String errorMessage = Recon.toString(
-          Record.create(2)
+          Record.create(1)
               .slot("error subscribing to Kafka topic", t.getMessage())
-              .slot("Kafka config:", kafkaConfig.toString())
       );
       error(logMessage("CONNECT", errorMessage));
     }

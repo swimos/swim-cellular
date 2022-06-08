@@ -19,48 +19,42 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
 public class KafkaConnector<K, V> {
 
-  final Properties kafkaProps = new Properties();
-  private final Collection<String> topics;
+  private final Properties kafkaProps;
 
-  public KafkaConnector(KafkaConfig kafkaConfig) {
-    final String servers = kafkaConfig.getServers();
-    final String topic = kafkaConfig.getTopic();
-    if (servers.equals("") || topic.equals("")) {
-      throw new RuntimeException("kafka servers and topics are required parameters");
-    }
-    this.kafkaProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
-    this.kafkaProps.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConfig.getGroupId());
-    this.kafkaProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-    this.kafkaProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, kafkaConfig.isAutoCommit());
-    this.kafkaProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, kafkaConfig.getMaxPollRecords());
-    this.kafkaProps.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, kafkaConfig.getFetchMinBytes());
-    this.kafkaProps.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, kafkaConfig.getFetchMaxBytes());
-    this.kafkaProps.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, kafkaConfig.getMaxPartitionFetchBytes());
-    this.kafkaProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaConfig.getKeyClass());
-    this.kafkaProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaConfig.getValueClass());
-    this.kafkaProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, kafkaConfig.getMaxPollInterval());
-    this.kafkaProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 120000);
-    this.kafkaProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10000);
-    final String schemaRegistryUrl = kafkaConfig.getSchemaUrl();
-    if (schemaRegistryUrl != null && !schemaRegistryUrl.trim().equals("")) {
-      this.kafkaProps.put("schema.registry.url", schemaRegistryUrl);
-    }
-    this.topics = Collections.singletonList(topic);
+  public KafkaConnector(String configFile) throws IOException {
+    this.kafkaProps = loadConfig(configFile);
   }
 
-  public Consumer<K, V> subscribe() {
-    final KafkaConsumer<K, V> kc = new KafkaConsumer<K, V>(this.kafkaProps);
-    kc.subscribe(this.topics);
-    return kc;
+  public Properties getKafkaProps() {
+    return kafkaProps;
   }
 
-  public KafkaProducer<K, V> produce() {
+  public boolean isAutoCommit() {
+    return kafkaProps.getProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false").equals("true");
+  }
+
+  private Properties loadConfig(final String configFile) throws IOException {
+    final Properties props = new Properties();
+    try (InputStream inputStream = new FileInputStream(configFile)) {
+      props.load(inputStream);
+    }
+    return props;
+  }
+
+  public Consumer<K, V> consumer() {
+    return new KafkaConsumer<K, V>(this.kafkaProps);
+  }
+
+  public KafkaProducer<K, V> producer() {
     return new KafkaProducer<K, V>(this.kafkaProps);
   }
 

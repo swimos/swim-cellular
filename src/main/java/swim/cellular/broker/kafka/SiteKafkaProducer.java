@@ -17,7 +17,6 @@ package swim.cellular.broker.kafka;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -28,11 +27,11 @@ public class SiteKafkaProducer {
 
   private static final String CSV_PATTERN = "%d,%f,%d,%d";
 
-  public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-    final KafkaConfig kafkaConfig = KafkaConfig.load();
-    final KafkaConnector<Integer, String> kafkaConnector = new KafkaConnector<>(kafkaConfig);
-    final KafkaProducer<Integer, String> producer = kafkaConnector.produce();
-    generate(producer, kafkaConfig.getTopic());
+  public static void main(String[] args) throws IOException, InterruptedException {
+    final String kafkaConfigFile = System.getProperty("kafka-config", "kafka-config.properties");
+    final KafkaConnector<Integer, String> kafkaConnector = new KafkaConnector<>(kafkaConfigFile);
+    final KafkaProducer<Integer, String> producer = kafkaConnector.producer();
+    generate(producer, System.getProperty("topic"));
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       try {

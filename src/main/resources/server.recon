@@ -15,7 +15,9 @@ cellular: @fabric {
 
   @node {
     pattern: "/kafka/site"
-    @agent(class: "swim.cellular.broker.kafka.SiteKafkaAgent")
+    @agent(class: "swim.cellular.broker.kafka.SiteKafkaAgent") {
+      topic: "cellular-demo"
+    }
   }
 
   @node {
