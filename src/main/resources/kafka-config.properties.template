@@ -1,0 +1,25 @@
+# Required connection configs for Kafka producer, consumer
+
+bootstrap.servers=<your-kafka/confluent broker url>
+security.protocol=SASL_SSL
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule   required username='your-username'   password='your-password';
+sasl.mechanism=PLAIN
+
+# Required for correctness in Apache Kafka clients prior to 2.6
+client.dns.lookup=use_all_dns_ips
+
+# Best practice for higher availability in Apache Kafka clients prior to 3.0
+session.timeout.ms=45000
+
+# Best practice for Kafka producer to prevent data loss
+acks=all
+
+group.id=<your-group-id>
+auto.offset.reset=latest
+enable.auto.commit=true
+
+key.deserializer=org.apache.kafka.common.serialization.IntegerDeserializer
+value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+
+key.serializer=org.apache.kafka.common.serialization.IntegerSerializer
+value.serializer=org.apache.kafka.common.serialization.StringSerializer
