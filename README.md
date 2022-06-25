@@ -1,7 +1,7 @@
 # Swim Cellular Network Simulator
 
 A tutorial application for teaching core Swim concepts.  See a hosted version
-of this app running at [https://cellular.swim.services](https://cellular.swim.services).
+of this app running at [https://cellular.swim.inc](https://cellular.swim.inc).
 
 ## Getting Started
 
