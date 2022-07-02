@@ -1,4 +1,4 @@
-FROM oracle/graalvm-ce:latest
+FROM ghcr.io/graalvm/graalvm-ce:latest
 LABEL maintainer=rohitbose
 WORKDIR /app
 COPY libs libs/
