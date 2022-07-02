@@ -1,6 +1,6 @@
 # Swim Cellular Network Simulator
 
-See a hosted version of this app running at [https://cellular.swim.services](https://cellular.swim.services).
+See a hosted version of this app running at [https://cellular.swim.inc](https://cellular.swim.inc).
 
 This is as an example of how to use Swim to connecto to a Pulsar Broker and feed the messages to Web Agents.
 - The `SitePulsarProducer` generates messages to a topic on a Pulsar broker. 
