@@ -58,6 +58,9 @@ public abstract class PulsarAgent extends MessageBrokerAgent {
     final MessageListener<byte[]> messageListener = (consumer, msg) -> {
       asyncStage().execute(() -> {
         try {
+          if (isPersistent) {
+            consumer.acknowledgeAsync(msg);
+          }
           final String strMsg = new String(msg.getData());
           final CommandMessage command = makeCommand(strMsg);
           if (!command.equals(EMPTY_COMMAND)) {
@@ -79,9 +82,6 @@ public abstract class PulsarAgent extends MessageBrokerAgent {
               e.printStackTrace();
             }
           }
-        }
-        if (isPersistent) {
-          consumer.acknowledgeAsync(msg);
         }
         this.messageCount.incrementAndGet();
       });
