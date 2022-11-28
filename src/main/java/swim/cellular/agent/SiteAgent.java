@@ -121,7 +121,7 @@ public class SiteAgent extends AbstractAgent {
         final int tileX = (int) (x * (double) (1 << MAX_ZOOM));
         final int tileY = (int) (y * (double) (1 << MAX_ZOOM));
         final int tileZ = MAX_ZOOM;
-        final Uri tileUri = Uri.from(UriPath.from("/", "map", "/", tileX + "," + tileY + "," + tileZ));
+        final Uri tileUri = Uri.create(UriPath.of("/", "map", "/", tileX + "," + tileY + "," + tileZ));
         command(tileUri, MAP_ADD_SITE_LANE_URI, status.updated("uri", Uri.form().mold(nodeUri()).toValue()));
       }
     }
