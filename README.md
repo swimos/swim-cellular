@@ -115,6 +115,31 @@ Or stream all log messages for a host:
 swim-cli sync -h warps://cellular.swim.services -n swim:meta:host -l debugLog
 ```
 
+#### Stream Site Data
+
+You can stream the data from a site (for site with id 1440)
+
+```sh
+swim-cli sync -h warps://cellular.swim.services -n /site/1440 -l info
+swim-cli sync -h warps://cellular.swim.services -n /site/1440 -l status
+swim-cli sync -h warps://cellular.swim.services -n /site/1440 -l kpis
+swim-cli sync -h warps://cellular.swim.services -n /site/1440 -l ranLatest
+swim-cli sync -h warps://cellular.swim.services -n /site/1440 -l ranHistory
+```
+
+#### HTTP API access to site data
+
+Site's expose their summary data via a http lane which can be accessed via a HTTP API.
+Sample URL to get a site's summary data (for site with id 1440)
+
+`https://cellular.swim.services/site/1440?lane=summary`
+
+#### HTTP API access to site data using an alternate URL
+
+The `CelluarUIRouter` also exposes an endpoint `/api?agent={agent_uri}&field={lane_name}`.   
+`http://localhost:9001/api?agent=/site/1440&field=summary`
+
+Getting  
 ## Repository Structure
 
 ### Key files

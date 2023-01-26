@@ -14,8 +14,13 @@
 
 package swim.cellular;
 
+import swim.api.space.Space;
 import swim.kernel.KernelProxy;
+import swim.service.web.HttpLaneResponder;
 import swim.structure.Value;
+import swim.system.EdgeBinding;
+import swim.system.EdgeContext;
+import swim.uri.Uri;
 import swim.uri.UriPath;
 import swim.web.WebRequest;
 import swim.web.WebResponse;
@@ -28,14 +33,16 @@ import swim.web.route.ResourceDirectoryRoute;
 public class CellularUiRouter extends KernelProxy {
   final double kernelPriority;
   final WebRoute uiRoute;
+  final String spaceName;
 
-  public CellularUiRouter(double kernelPriority) {
+  public CellularUiRouter(double kernelPriority, String spaceName) {
     this.kernelPriority = kernelPriority;
     this.uiRoute = new ResourceDirectoryRoute(getClass().getClassLoader(), UriPath.parse("ui/"), "index.html");
+    this.spaceName = spaceName;
   }
 
   public CellularUiRouter() {
-    this(KERNEL_PRIORITY);
+    this(KERNEL_PRIORITY, "");
   }
 
   @Override
@@ -45,11 +52,29 @@ public class CellularUiRouter extends KernelProxy {
 
   @Override
   public WebResponse routeRequest(WebRequest request) {
+    final Uri httpUri = request.httpUri();
+
     final WebResponse response = this.uiRoute.routeRequest(request);
     if (response.isAccepted()) {
       return response;
     } else {
-      return super.routeRequest(request);
+      try {
+        final String agent = httpUri.query().get("agent");
+        final Uri nodeUri = agent != null ? Uri.parse(agent) : Uri.empty();
+        final String lane = httpUri.query().get("field");
+        final Uri laneUri = lane != null ? Uri.parse(lane) : Uri.empty();
+
+        final CellularHttpLaneResponder httpBinding = new CellularHttpLaneResponder(Uri.empty(), Uri.empty(),
+            nodeUri, laneUri, request.httpRequest());
+        final Space space = this.kernelContext().getSpace(spaceName);
+        final EdgeBinding edge = ((EdgeContext) space).edgeWrapper();
+        edge.openUplink(httpBinding);
+        final WebResponse webResponse = request.accept(httpBinding);
+        return webResponse;
+      } catch (Exception e) {
+        return super.routeRequest(request);
+      }
+
     }
   }
 
@@ -94,7 +119,8 @@ public class CellularUiRouter extends KernelProxy {
     final String kernelClassName = header.get("class").stringValue(null);
     if (kernelClassName == null || CellularUiRouter.class.getName().equals(kernelClassName)) {
       final double kernelPriority = header.get("priority").doubleValue(KERNEL_PRIORITY);
-      return new CellularUiRouter(kernelPriority);
+      final String space = header.get("space").stringValue("");
+      return new CellularUiRouter(kernelPriority, space);
     }
     return null;
   }

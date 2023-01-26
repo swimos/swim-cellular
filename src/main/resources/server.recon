@@ -1,6 +1,6 @@
 @kernel(class: "swim.store.db.DbStoreKernel", optional: true)
 @kernel(class: "swim.meta.MetaKernel")
-@kernel(class: "swim.cellular.CellularUiRouter")
+@kernel(class: "swim.cellular.CellularUiRouter", space: "cellular")
 
 @web(port: 9001) {
   space: "cellular"
