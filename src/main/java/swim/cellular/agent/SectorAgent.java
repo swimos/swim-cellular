@@ -16,7 +16,18 @@ package swim.cellular.agent;
 
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
+import swim.api.downlink.EventDownlink;
+import swim.api.downlink.ValueDownlink;
+import swim.api.http.HttpLane;
 import swim.api.lane.ValueLane;
+import swim.codec.Output;
+import swim.http.HttpChunked;
+import swim.http.HttpRequest;
+import swim.http.HttpResponse;
+import swim.http.HttpStatus;
+import swim.http.MediaType;
+import swim.json.Json;
+import swim.observable.function.DidSet;
 import swim.structure.Value;
 
 /**
@@ -30,12 +41,33 @@ public class SectorAgent extends AbstractAgent {
   @SwimLane("status")
   ValueLane<Value> status;
 
+  @SwimLane("summary")
+  HttpLane<Value> summary = this.<Value>httpLane()
+      .doRespond(this::onRequestSummary);
+
+  ValueDownlink<Value> dl;
+
+  private HttpResponse<?> onRequestSummary(HttpRequest<Value> valueHttpRequest) {
+    Value payload = this.status.get();
+    if (dl != null) {
+      payload = payload.concat(dl.get());
+    }
+    // Construct the response entity by incrementally serializing and encoding
+    // the response payload as JSON.
+    final HttpChunked<?> entity = HttpChunked.create(Json.write(Output.full(), payload),
+        MediaType.applicationJson());
+    // Return the HTTP response.
+    return HttpResponse.create(HttpStatus.OK).content(entity);
+  }
+
   /**
    * Invoked when the SwimOS Kernel begins executing this Web Agent process.
    */
   @Override
   public void didStart() {
-    //System.out.println(nodeUri() + " didStart sector");
+    // construct the site uri here which is of the form: /site/:id
+    final String siteId = "/site/" + getProp("id").stringValue();
+    dl = downlinkValue().nodeUri(siteId).laneUri("info").open();
   }
 
 }
