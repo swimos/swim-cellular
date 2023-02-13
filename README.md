@@ -132,7 +132,15 @@ swim-cli sync -h warps://cellular.swim.services -n /site/1440 -l ranHistory
 Site's expose their summary data via a http lane which can be accessed via a HTTP API.
 Sample URL to get a site's summary data (for site with id 1440)
 
-`https://cellular.swim.services/site/1440?lane=summary`
+`http://localhost:9001/site/1440?lane=summary`
+
+#### HTTP API access to sector summary which returns its status and adds the site "info" lane on demand
+
+Sector Carrier's expose their summary data via a http lane which can be accessed via a HTTP API.
+Sample URL to get a site's summary data (for site 1440 and sector carrier 0 and sector carrier 1)
+
+`http://localhost:9001/site/1440/sector/0?lane=summary`
+`http://localhost:9001/site/1440/sector/1?lane=summary`
 
 #### HTTP API access to site data using an alternate URL
 
