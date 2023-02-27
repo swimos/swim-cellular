@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Cellular Network Simulator",
   "homepage": "https://github.com/swimos/cellular",
-  "author": "Chris Sachs <chris@swim.ai>",
+  "author": "Chris Sachs <chris@swim.inc>",
   "copyright": "2020 Swim inc.",
   "license": "Apache-2.0",
   "repository": "https://github.com/swimos/cellular.git",
