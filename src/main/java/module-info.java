@@ -15,7 +15,7 @@
 open module swim.cellular {
   requires transitive swim.api;
   requires transitive swim.server;
-
+  requires org.slf4j;
   exports swim.cellular;
 
   provides swim.api.plane.Plane with swim.cellular.CellularPlane;

@@ -14,6 +14,8 @@
 
 package swim.cellular;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import swim.api.auth.Authenticator;
 import swim.api.plane.AbstractPlane;
 import swim.api.plane.PlaneContext;
@@ -27,6 +29,8 @@ import swim.server.ServerLoader;
  * represents a &quot;point&quot; in the distributed application plane.
  */
 public class CellularPlane extends AbstractPlane {
+
+  static final Logger logger = LoggerFactory.getLogger(CellularPlane.class);
 
   public static void main(String[] args) {
     // Load the SwimOS kernel, loading its configuration from the
@@ -45,7 +49,7 @@ public class CellularPlane extends AbstractPlane {
 
     // Boot the SwimOS kernel.
     kernel.start();
-    System.out.println("Running CellularPlane ...");
+    logger.info("Running CellularPlane ...");
 
     // Park the main thread while the application concurrently runs.
     kernel.run();

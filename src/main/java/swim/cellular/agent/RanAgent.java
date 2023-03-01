@@ -16,6 +16,8 @@ package swim.cellular.agent;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
 import swim.api.lane.JoinValueLane;
@@ -33,6 +35,8 @@ import swim.uri.Uri;
  * for multiple cell sites.
  */
 public class RanAgent extends AbstractAgent {
+
+  static final Logger logger = LoggerFactory.getLogger(RanAgent.class);
 
   /**
    * Infrequently changing information about the radio access network.
@@ -126,7 +130,7 @@ public class RanAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    System.out.println(nodeUri() + " didStart ran");
+    logger.info(nodeUri() + " didStart ran");
     seed();
   }
 

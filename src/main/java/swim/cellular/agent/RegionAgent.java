@@ -14,6 +14,8 @@
 
 package swim.cellular.agent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import swim.api.SwimLane;
 import swim.api.agent.AbstractAgent;
 import swim.api.lane.JoinValueLane;
@@ -50,6 +52,8 @@ import swim.uri.Uri;
  * main memory (i.e. the remote state of the linked-to lane).
  */
 public class RegionAgent extends AbstractAgent {
+
+  static final Logger logger = LoggerFactory.getLogger(RegionAgent.class);
 
   /**
    * A structured &quot;file&quot; containing infrequently changing
@@ -90,7 +94,7 @@ public class RegionAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    System.out.println(nodeUri() + " didStart region");
+    logger.info(nodeUri() + " didStart region");
     seed();
   }
 

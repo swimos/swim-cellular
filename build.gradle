@@ -38,6 +38,8 @@ dependencies {
   api group: 'org.swimos', name: 'swim-api', version: swimVersion
   implementation group: 'org.swimos', name: 'swim-server', version: swimVersion
   runtimeOnly group: 'org.swimos', name: 'swim-meta', version: swimVersion
+  implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.4'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
 }
 
 afterEvaluate {
