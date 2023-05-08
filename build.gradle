@@ -118,7 +118,7 @@ afterEvaluate {
       image = "openjdk:11"
     }
     to {
-      image = "nstream/demo-cellular:${application.version}"
+      image = "nstream/demo-cellular:${version}"
       auth {
         username = "$System.env.REGISTRY_USERNAME"
         password = "$System.env.REGISTRY_PASSWORD"
