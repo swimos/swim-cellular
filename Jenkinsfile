@@ -37,7 +37,7 @@ pipeline {
 //                if(env.PROD == "true") {
                 container('java') {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
-                        sh "./gradlew clean jib --no-daemon"
+                        sh "./gradlew clean jib --no-daemon -Papplication.version=1.0.${BUILD_NUMBER}"
                     }
 //                }
                 }
