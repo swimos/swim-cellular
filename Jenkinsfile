@@ -21,7 +21,7 @@ pipeline {
     }
 
     environment {
-        PROD = "${env.GIT_BRANCH == 'main'||env.GIT_BRANCH == 'master'}"
+        PROD = "${env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'master'}"
     }
 
     stages {
@@ -35,10 +35,12 @@ pipeline {
         stage('release') {
             steps {
 //                if(env.PROD == "true") {
+                container('java') {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
                         sh "./gradlew clean jib:build --no-daemon"
                     }
 //                }
+                }
             }
         }
     }
