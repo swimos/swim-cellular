@@ -21,7 +21,7 @@ pipeline {
     }
 
     environment {
-        PROD = "${env.GIT_BRANCH == 'main'||env.GIT_BRANCH == 'master'}"
+        PROD = (env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'master')
     }
 
     stages {
@@ -30,7 +30,13 @@ pipeline {
                 container('java') {
                     sh "./gradlew build"
                 }
-
+            }
+        }
+        stage('release') {
+            steps {
+                if(PROD) {
+                    sh "./gradlew jib:build"
+                }
             }
         }
     }
