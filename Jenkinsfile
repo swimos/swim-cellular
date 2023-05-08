@@ -28,7 +28,7 @@ pipeline {
         stage('build') {
             steps {
                 container('java') {
-                    sh "./gradlew build"
+                    sh "./gradlew build --no-daemon"
                 }
             }
         }
@@ -36,7 +36,7 @@ pipeline {
             steps {
 //                if(env.PROD == "true") {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
-                        sh "./gradlew jib:build"
+                        sh "./gradlew jib:build --no-daemon"
                     }
 //                }
             }
