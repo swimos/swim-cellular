@@ -119,6 +119,10 @@ afterEvaluate {
     }
     to {
       image = "nstream/demo-cellular"
+      auth {
+        username = "$System.env.REGISTRY_USERNAME"
+        password = "$System.env.REGISTRY_PASSWORD"
+      }
     }
     container {
       mainClass = mainClassName

@@ -34,9 +34,11 @@ pipeline {
         }
         stage('release') {
             steps {
-                if(env.PROD == "true") {
-                    sh "./gradlew jib:build"
-                }
+//                if(env.PROD == "true") {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
+                        sh "./gradlew jib:build"
+                    }
+//                }
             }
         }
     }
