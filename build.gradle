@@ -6,7 +6,12 @@ buildscript {
   }
   dependencies {
     classpath 'com.netflix.nebula:gradle-ospackage-plugin:8.3.0'
+
   }
+}
+
+plugins {
+  id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
 apply plugin: 'java-library'
@@ -14,6 +19,9 @@ apply plugin: 'application'
 apply plugin: 'nebula.ospackage-application'
 
 apply plugin: 'idea'
+
+//apply plugin: 'com.google.cloud.tools.jib'
+
 idea.module.outputDir file("out/production/classes")
 
 group = 'org.swimos'
@@ -104,6 +112,31 @@ afterEvaluate {
   artifacts {
     archives javadocJar, sourcesJar
   }
+
+  jib {
+    from {
+      image = "openjdk:11"
+    }
+    to {
+      image = "nstream/demo-cellular"
+    }
+    container {
+      mainClass = mainClassName
+      ports = ['9001/tcp']
+      jvmFlags = ['-Dswim.config=/config/server.recon']
+    }
+    extraDirectories {
+      paths {
+        path {
+          // copies a single-file.xml
+          from = 'src/main/resources'
+          into = '/config'
+          includes = ['*.recon']
+        }
+      }
+    }
+  }
+
 
   run {
     dependsOn jar
