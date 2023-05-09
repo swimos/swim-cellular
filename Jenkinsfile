@@ -46,7 +46,7 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                sh "sed 's/DOCKER_IMAGE/nstream\\/demo-cellular:${APPLICATION_VERSION}' > k8s.apply.yml"
+                sh "sed 's/DOCKER_IMAGE/nstream\\/demo-cellular:${APPLICATION_VERSION}/g' > k8s.apply.yml"
                 archiveArtifacts artifacts: 'k8s.apply.yml', followSymlinks: false
                 sh "kubectl apply -f k8s.apply.yml"
             }
