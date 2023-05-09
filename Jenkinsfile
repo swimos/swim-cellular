@@ -18,6 +18,7 @@ pipeline {
             tty: true
           - name: kubectl
             image: bitnami/kubectl:1.27.1
+            entrypoint: ""
             command:
             - cat
             tty: true
