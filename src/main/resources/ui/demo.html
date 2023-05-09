@@ -22,8 +22,8 @@
   </head>
   <body style="display: flex; justify-content: center; align-items: center; width: 100vw; height: 100vh; margin: 0;">
 
-    <a href="https://www.swim.inc" target="_blank">
-      <div class="logo"><img src="marlin-swim-blue.svg" width="156" height="68"></div>
+    <a href="https://www.nstream.io/" target="_blank">
+      <div class="logo"><img src="//www.nstream.io/wp-content/themes/sleepify/assets/images/logo-main.svg" width="195" height="25"></div>
     </a>
     <div id="app" style="display: flex; position: relative; width: 100%; height: 100%;">
     </div>
@@ -51,15 +51,34 @@ const mapView = new swim.MapboxView(map);
 mapView.overlayCanvas();
 
 const baseUri = swim.Uri.parse(document.location.href);
-const hostParam = baseUri.query().get("host");
-const hostUri = "warps://cellular.swim.services";
+const hostParam = baseUri.host().toString();
+const schemeParam = baseUri.scheme().toString();
+const portParam = baseUri.port();
+const warpScheme = schemeParam === "https" ? "warps":"warp"
+
+let warpHost;
+
+if(hostParam.endsWith("swim.services")) {
+  warpHost = "cellular.swim.services"
+} else if(hostParam.endsWith("nstream-demo.io")) {
+  warpHost = "cellular.services.nstream-demo.io"
+} else {
+  warpHost = hostParam;
+}
+
+let hostUri;
+
+if (portParam === undefined) {
+  hostUri = `${warpScheme}://${warpHost}`
+} else {
+  hostUri = `${warpScheme}://${warpHost}:${portParam.toString()}`
+}
 
 const hostRef = swim.client.hostRef(hostUri);
 const rootNodeRef = hostRef.nodeRef("/country/US");
 
 const rootRegionMapView = new swim.cellular.RegionMapView(rootNodeRef);
 mapView.append(rootRegionMapView);
-
     </script>
 
     <!-- Google -->
@@ -70,6 +89,5 @@ mapView.append(rootRegionMapView);
       gtag('js', new Date());
       gtag('config', 'UA-79441805-1');
     </script>
-
   </body>
 </html>

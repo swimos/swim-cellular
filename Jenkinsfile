@@ -16,12 +16,18 @@ pipeline {
             command:
             - cat
             tty: true
+          - name: kubectl
+            image: bitnami/kubectl:1.27.1
+            command:
+            - cat
+            tty: true
         '''
         }
     }
 
     environment {
         PROD = "${env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'master'}"
+        APPLICATION_VERSION="1.0.${BUILD_NUMBER}"
     }
 
     stages {
@@ -37,9 +43,19 @@ pipeline {
 //                if(env.PROD == "true") {
                 container('java') {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USERNAME')]) {
-                        sh "./gradlew clean jib --no-daemon -Papplication.version=1.0.${BUILD_NUMBER}"
+                        sh "./gradlew clean jib --no-daemon -Papplication.version={APPLICATION_VERSION}"
                     }
 //                }
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                container('kubectl') {
+                    withEnv(["DOCKER_IMAGE={nstream/demo-cellular:APPLICATION_VERSION}"]) {
+                        sh 'envsubst < k8s.yml > k8s.apply.yml'
+                    }
+                    sh "kubectl apply -f k8s.apply.yml"
                 }
             }
         }
