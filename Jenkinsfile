@@ -52,7 +52,8 @@ pipeline {
         stage('deploy') {
             steps {
                 container('kubectl') {
-                    withEnv(["DOCKER_IMAGE={nstream/demo-cellular:APPLICATION_VERSION}"]) {
+                    withEnv(["DOCKER_IMAGE={nstream/demo-cellular:${APPLICATION_VERSION}"]) {
+                        sh "echo ${DOCKER_IMAGE}"
                         sh 'cat k8s.yml | envsubst > k8s.apply.yml'
                         archiveArtifacts artifacts: 'k8s.apply.yml', followSymlinks: false
                     }
