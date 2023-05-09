@@ -15,7 +15,7 @@ spec:
         demo: cellular
     spec:
       containers:
-        - image: $DOCKER_IMAGE
+        - image: DOCKER_IMAGE
           imagePullPolicy: Always
           name: demo
           ports:

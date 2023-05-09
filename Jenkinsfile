@@ -17,8 +17,7 @@ pipeline {
             - cat
             tty: true
           - name: kubectl
-            image: bitnami/kubectl:1.27.1
-            entrypoint: ""
+            image: rancher/kubectl:v1.27.1
             command:
             - cat
             tty: true
@@ -52,14 +51,9 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                container('java') {
-                    withEnv(["DOCKER_IMAGE={nstream/demo-cellular:${APPLICATION_VERSION}"]) {
-                        sh "echo ${DOCKER_IMAGE}"
-                        sh 'cat k8s.yml | envsubst > k8s.apply.yml'
-                        archiveArtifacts artifacts: 'k8s.apply.yml', followSymlinks: false
-                    }
-                    sh "kubectl apply -f k8s.apply.yml"
-                }
+                sh "sed 's/DOCKER_IMAGE/nstream\\/demo-cellular:${APPLICATION_VERSION} > k8s.apply.yml"
+                archiveArtifacts artifacts: 'k8s.apply.yml', followSymlinks: false
+                sh "kubectl apply -f k8s.apply.yml"
             }
         }
     }
