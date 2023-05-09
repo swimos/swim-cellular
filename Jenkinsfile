@@ -52,7 +52,7 @@ pipeline {
         }
         stage('deploy') {
             steps {
-                container('kubectl') {
+                container('java') {
                     withEnv(["DOCKER_IMAGE={nstream/demo-cellular:${APPLICATION_VERSION}"]) {
                         sh "echo ${DOCKER_IMAGE}"
                         sh 'cat k8s.yml | envsubst > k8s.apply.yml'
