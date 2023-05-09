@@ -16,11 +16,6 @@ pipeline {
             command:
             - cat
             tty: true
-          - name: kubectl
-            image: rancher/kubectl:v1.27.1
-            command:
-            - cat
-            tty: true
         '''
         }
     }
