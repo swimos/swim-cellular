@@ -15,14 +15,7 @@ pipeline {
             image: openjdk:11
             command:
             - cat
-            tty: true
-          - name: kubectl
-            image: bitnami/kubectl:1.27.1
-            command:
-            - cat
-            tty: true
-          
-          
+            tty: true          
         '''
         }
     }
@@ -58,8 +51,11 @@ pipeline {
 
                 withCredentials([string(credentialsId: 'demo-deployer-k8s-cluster-ca', variable: 'CLUSTER_CA'), string(credentialsId: 'demo-deployer-k8s-cluster-endpoint', variable: 'ENDPOINT')]) {
                     withKubeConfig(caCertificate: CLUSTER_CA, credentialsId: 'demo-deployer-k8s-cluster-token', serverUrl: ENDPOINT) {
-                        container('kubectl'){
-                            sh "kubectl apply -f k8s.apply.yml"
+                        container('java'){
+                            // TODO Figure out a container we can use that already has kubectl.
+                            sh "curl --no-progress-meter -O https://s3.us-west-1.amazonaws.com/amazon-eks/1.25.7/2023-03-17/bin/linux/amd64/kubectl"
+                            sh "chmod +x kubectl"
+                            sh "./kubectl apply -f k8s.apply.yml"
                         }
                     }
                 }
