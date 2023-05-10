@@ -1,3 +1,3 @@
-library('jenkins-pipeline@initial')
+library('jenkins-pipeline')
 
 demoPipeline("cellular")
