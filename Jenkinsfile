@@ -50,7 +50,7 @@ pipeline {
                 archiveArtifacts artifacts: 'k8s.apply.yml', followSymlinks: false
 
                 withCredentials([string(credentialsId: 'demo-deployer-k8s-cluster-ca', variable: 'CLUSTER_CA'), string(credentialsId: 'demo-deployer-k8s-cluster-endpoint', variable: 'ENDPOINT')]) {
-                    withKubeConfig(caCertificate: "${CLUSTER_CA}", credentialsId: 'demo-deployer-k8s-cluster-token', serverUrl: "${ENDPOINT}") {
+                    withKubeConfig(caCertificate: CLUSTER_CA, credentialsId: 'demo-deployer-k8s-cluster-token', serverUrl: ENDPOINT) {
                        sh "kubectl apply -f k8s.apply.yml"
                     }
                 }
