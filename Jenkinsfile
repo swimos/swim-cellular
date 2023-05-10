@@ -55,7 +55,7 @@ pipeline {
                             // TODO Figure out a container we can use that already has kubectl.
                             sh "curl --no-progress-meter -O https://s3.us-west-1.amazonaws.com/amazon-eks/1.25.7/2023-03-17/bin/linux/amd64/kubectl"
                             sh "chmod +x ./kubectl"
-                            sh "kubectl version --short --client"
+                            sh "./kubectl version --short --client"
                             sh "./kubectl apply -f k8s.apply.yml"
                         }
                     }
