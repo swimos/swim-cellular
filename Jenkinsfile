@@ -1,4 +1,2 @@
 @Library('jenkins-pipeline@initial')
-demoPipeline {
-    name = "cellular"
-}
+demoPipeline(name: "cellular")
