@@ -21,8 +21,10 @@ import swim.api.lane.ValueLane;
 import swim.structure.Value;
 import swim.uri.Uri;
 
-public class ENodeBConnectorAgent extends AbstractAgent {
+import java.util.logging.Logger;
 
+public class ENodeBConnectorAgent extends AbstractAgent {
+  private static final Logger log = Logger.getLogger(ENodeBConnectorAgent.class.getName());
   /**
    * A downlink to the status lane of the EnodeBAgent (whose uri is the
    * same as this agent) hosted on cellular.swim.services. The downlink updates
@@ -76,7 +78,7 @@ public class ENodeBConnectorAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    //System.out.println(nodeUri() + " didStart");
+    log.fine(()-> String.format("%s didStart", nodeUri()));
 
     // Instantiate the statusDownlink
     statusDownlink = downlinkValue()

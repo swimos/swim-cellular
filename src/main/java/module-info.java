@@ -15,6 +15,7 @@
 open module swim.cellular {
   requires transitive swim.api;
   requires transitive swim.server;
+  requires java.logging;
 
   exports swim.cellular;
 
