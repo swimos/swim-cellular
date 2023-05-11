@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: demo-cellular
+  namespace: demo-cellular
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      demo: cellular
+  serviceName: demo
+  template:
+    metadata:
+      labels:
+        demo: cellular
+    spec:
+      containers:
+        - image: DOCKER_IMAGE
+          imagePullPolicy: Always
+          name: demo
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "2"
+              memory: 12Gi
+            requests:
+              cpu: "2"
+              memory: 12Gi

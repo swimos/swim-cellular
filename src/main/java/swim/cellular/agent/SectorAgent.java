@@ -19,11 +19,13 @@ import swim.api.agent.AbstractAgent;
 import swim.api.lane.ValueLane;
 import swim.structure.Value;
 
+import java.util.logging.Logger;
+
 /**
  * A Web Agent that represents a sector-carrier associated with a cell site.
  */
 public class SectorAgent extends AbstractAgent {
-
+  private static final Logger log = Logger.getLogger(SectorAgent.class.getName());
   @SwimLane("info")
   ValueLane<Value> info;
 
@@ -35,7 +37,7 @@ public class SectorAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    //System.out.println(nodeUri() + " didStart sector");
+    log.fine(()-> String.format("%s didStart", nodeUri()));
   }
 
 }

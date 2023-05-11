@@ -23,6 +23,8 @@ import swim.structure.Item;
 import swim.structure.Value;
 import swim.uri.Uri;
 
+import java.util.logging.Logger;
+
 /**
  * A Web Agent that represents a geographic region, and participates in a
  * hierarchical tree of nested regions.
@@ -50,7 +52,7 @@ import swim.uri.Uri;
  * main memory (i.e. the remote state of the linked-to lane).
  */
 public class RegionAgent extends AbstractAgent {
-
+  private static final Logger log = Logger.getLogger(RegionAgent.class.getName());
   /**
    * A structured &quot;file&quot; containing infrequently changing
    * information about this region.  This Swim Lane (&quot;file&quot;)
@@ -90,7 +92,7 @@ public class RegionAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    System.out.println(nodeUri() + " didStart region");
+    log.info(() -> String.format("%s didStart region", nodeUri()));
     seed();
   }
 

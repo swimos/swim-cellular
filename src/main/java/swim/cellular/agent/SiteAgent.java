@@ -24,12 +24,15 @@ import swim.structure.Value;
 import swim.uri.Uri;
 import swim.uri.UriPath;
 
+import java.util.logging.Logger;
+
+
 /**
  * A Web Agent that represents a generic cell site.  This agent is intended to
  * implement logic and analytics that are common to all types of cell sites.
  */
 public class SiteAgent extends AbstractAgent {
-
+  private static final Logger log = Logger.getLogger(SiteAgent.class.getName());
   @SwimLane("info")
   ValueLane<Value> info;
 
@@ -49,7 +52,8 @@ public class SiteAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    //System.out.println(nodeUri() + " didStart site");
+    log.fine(()-> String.format("%s didStart", nodeUri()));
+
     seed();
 
     // Launch an eNodeB agent in the same Swim Node as this agent.

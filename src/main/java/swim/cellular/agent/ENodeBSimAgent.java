@@ -21,12 +21,14 @@ import swim.concurrent.TimerRef;
 import swim.structure.Record;
 import swim.structure.Value;
 
+import java.util.logging.Logger;
+
 /**
  * A specialization of a cell site that is intended to simulate the behavior
  * of an eNodeB.
  */
 public class ENodeBSimAgent extends AbstractAgent {
-
+  private static final Logger log = Logger.getLogger(ENodeBSimAgent.class.getName());
   /**
    * Handle to the timer that drives the simulation.
    */
@@ -51,7 +53,7 @@ public class ENodeBSimAgent extends AbstractAgent {
    * Runs a single step of the eNodeB simulation.
    */
   void onSimTick() {
-    //System.out.println(nodeUri() + " onSimTick");
+    log.fine(()-> String.format("%s didStart", nodeUri()));
 
     // Reschedule the simulation timer to execute again at a random time
     // between 0 and 60 seconds from now.
@@ -92,7 +94,7 @@ public class ENodeBSimAgent extends AbstractAgent {
    */
   @Override
   public void didStart() {
-    //System.out.println(nodeUri() + " didStart");
+    log.fine(()-> String.format("%s didStart", nodeUri()));
 
     // Immediately run a simulation tick.
     this.simTicker = setTimer(0, this::onSimTick);

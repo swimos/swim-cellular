@@ -21,14 +21,23 @@ import swim.api.policy.PlanePolicy;
 import swim.kernel.Kernel;
 import swim.server.ServerLoader;
 
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
+
+
 /**
  * Entry point for the distributed application.  A Swim plane represents a
  * distributed application as a holistic unit.  Each server in a cluster
  * represents a &quot;point&quot; in the distributed application plane.
  */
 public class CellularPlane extends AbstractPlane {
+  private static final Logger log = Logger.getLogger(CellularPlane.class.getName());
 
   public static void main(String[] args) {
+    Logger.getGlobal().addHandler(
+        new StreamHandler(System.out, new SimpleFormatter())
+    );
     // Load the SwimOS kernel, loading its configuration from the
     // `server.recon` Java resource.
     final Kernel kernel = ServerLoader.loadServer();
@@ -45,7 +54,7 @@ public class CellularPlane extends AbstractPlane {
 
     // Boot the SwimOS kernel.
     kernel.start();
-    System.out.println("Running CellularPlane ...");
+    log.info("Running CellularPlane ...");
 
     // Park the main thread while the application concurrently runs.
     kernel.run();
