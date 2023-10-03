@@ -35,7 +35,7 @@ public class CellularPolicy extends AbstractPolicy {
   }
 
   @Override
-  public PolicyDirective<Object> canConnect(Uri requestUri) {
+  public PolicyDirective<Object> canConnect(HttpRequest<?> httpRequest) {
     return allow();
   }
 
